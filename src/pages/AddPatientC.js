@@ -335,7 +335,7 @@ const AddPatientCopy = ()=>{
           <div className="inner">
             <div className="chartNumInput-container input-container">
               <label htmlFor="">차트넘버</label>
-              <input type="number" value={examinee.chartNumber} ref={chartNumberRef} readOnly={location.state.update ? true : false}
+              <input type="text" value={examinee.chartNumber} ref={chartNumberRef} readOnly={location.state.update ? true : false}
               onChange={(e)=>{
                 let copy = examinee.chartNumber;
                 copy = e.target.value;
