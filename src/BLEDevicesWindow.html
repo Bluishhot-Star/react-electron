@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bluetooth Devices near by</title>
+    <link rel="stylesheet" href="./App.css">
+    <script src="https://kit.fontawesome.com/413c7f2129.js" crossorigin="anonymous"></script>
+</head>
+<body class="deviceList-body">
+    <div class="setting-page-container">
+      <div class="setting-page-nav">
+        <i class="fa-solid fa-chevron-left"></i>
+          <FontAwesomeIcon icon={faChevronLeft} class="close" style='color: "#4b75d6"' />
+          <p style="transform: translateY(-20px);">설정</p>
+      </div>
+      <!-- </div> -->
+
+      <div class="setting-page-left-container">
+        <div class="setting-page-left-container-nav">
+          <p>디바이스 정보</p>
+          <div class="device-connect">
+            <p>연결되지 않음</p>
+            <i class="fab fa-bluetooth-b"></i>
+          </div>
+        </div>
+
+        <div class='connect-info-container'>
+          <div class='connect-info'>
+              <p>PC의 블루투스 옵션을 켜신 후, 애플리케이션에서 요구하는 권한을 허용하셔야 합니다.<br>디바이스의 전원을 켜신 후 스캔 버튼을 눌러주세요.</p>
+              연결이 원활하지 않은 경우, 디바이스를 껐다가 다시 켜주신 후 연결을 시도해주세요.
+          </div>
+        </div>
+        <div class='device-list-container'>
+          <div class="device-list-column">
+            <div>디바이스</div>
+            <div>맥 주소</div>
+            <div>dB</div>
+          </div>
+          <div class="device-item-container">
+            <div class="device"></div>
+          <!-- {/* <div class="device-item">
+          </div> */} -->
+          <!-- <ul id="DeviceList"></ul> -->
+            <div id="DeviceList">
+              <!-- <div class="device-item-title">
+                <div><p>디바이스</p></div>
+                <div><p>MAC 주소</p></div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class='device-scan-btn-container'>
+          <div class='device-scan-btn' id="closeModal">
+            <p>스캔중</p><div id='loader'><span></span></div>
+          </div>
+        </div>
+
+      </div>
+      <div class="setting-page-right-container">
+        <div class="user-info-change-btn close"><p>유저 정보 변경</p></div>
+        <div class="measure-setting-btn close"><p>검사 설정</p></div>
+        <div class="clinic-manage-btn close"><p>의료진 관리</p></div>
+        <div class="device-manage-btn close"><p>디바이스 관리</p></div>
+        <div class="calibration-btn disabled" ><p>보정</p></div>
+        <div class="calibration-verification-btn disabled"><p>보정 검증</p></div>
+
+        <div class="log-out-btn"><p>로그아웃</p></div>
+      </div>
+    </div>
+
+
+    <script src="./BLEDevicesRenderer.js"></script>
+</body>
+</html>
