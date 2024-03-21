@@ -65,19 +65,25 @@ const AddPatientCopy = ()=>{
     console.log(temp);
     // PATCH 부분
     if(location.state.update && patch){
-      console.log(patch)
-      // axios.patch('/subjects',temp,{withCredentials : true})
-      // .then((res)=>{
-      //   console.log(res);
-      // })
-      // .catch((error)=>{
-      //   console.log(error);alert("ERROR");
-      // })
+      console.log("patch")
+      axios.put(`/subjects/${temp.chartNumber}`,temp,{withCredentials : true})
+      .then((res)=>{
+        console.log(res);
+      })
+      .catch((error)=>{
+        console.log(error);alert("ERROR");
+      })
     }
     // POST 부분
     else if(!location.state.update){
-      console.log(patch);
-      
+      console.log("post");
+      axios.post('/subjects',temp,{withCredentials : true})
+      .then((res)=>{
+        console.log(res);
+      })
+      .catch((error)=>{
+        console.log(error);alert("ERROR");
+      })
     }
     let date = new Date();
     navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
