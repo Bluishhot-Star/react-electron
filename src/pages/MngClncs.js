@@ -134,29 +134,6 @@ const MngClncs = () =>{
 
 
       </div>
-      {/* <div>
-        {
-          clinicians.map((item)=>{
-            return(
-              <div>
-                <div>{item.clinicianName}</div>
-                <div>{item.date}</div>
-                <div>{item.roleName}</div>
-                <div>{item.status==='enabled' ? '승인': '비승인'}</div>
-                <div>
-                  <label htmlFor="enable">승인</label>
-                  <input type='radio' defaultChecked={item.status === "enabled" ? true : false} name={item.clinicianId} className='statusTrue' value='true' onChange={(e)=>{statusChange(e,item.clinicianId)}}/>
-                  <label htmlFor="disable">거부</label>
-                  <input type='radio' defaultChecked={item.status === "disabled" ? true : false} name={item.clinicianId} className='statusFalse'value='false' onChange={(e)=>{statusChange(e,item.clinicianId)}}/>
-                </div>
-              </div>
-            )
-          })
-        }
-      </div> */}
-      {/* <div ref={ref}></div> */}
-
-      
     </div>
   );
 }
