@@ -52,22 +52,14 @@ const LoginForm = () =>{
       await window.api.send("set-cookie", accessTokenData);
 
       await window.api.send("set-cookie", refreshTokenData);
-      console.log(res);
-      // accessExpires.setMinutes(accessExpires.getMinutes() + 14);
-      // setCookie("accessToken", res.data.response.accessToken,{expires : accessExpires, secure:"true"});
-      // refreshExpires.setDate(refreshExpires.getDate()+7);
-      // setCookie("refreshToken",res.data.response.refreshToken,{expires : refreshExpires, secure:"true"});
-      // navigate('/memberList')
-      // setTimeout(()=>{
-      //     refresh(null);
-      // },(1000*60*14)); //14분 마다 refresh
+      navigate('/memberList')
+      
     })
     .catch((error)=>{
       setErrorAlertVisible(true);
     })
 
     console.log(accessToken);
-    navigate('/memberList')
   };
 
   // 빈칸 알림창
