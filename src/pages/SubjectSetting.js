@@ -111,7 +111,8 @@ const SubjectSetting = () =>{
   },[chgMsg])
   const backToSetting = (val)=>{
     if(val == "confirm"){
-      navigator(-1);
+      if(chgMsg == "비밀번호가 변경되었습니다.")navigator(-1);
+      else{}
     }
   }
 
