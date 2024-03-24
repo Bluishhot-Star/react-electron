@@ -17,7 +17,9 @@ import { HiOutlineCog } from "react-icons/hi";
 import { BiSolidFileJpg } from "react-icons/bi";
 import ReportFvc from './ReportFvc.js';
 import ReportSvc from './ReportSvc.js';
-
+var maxY = 0;
+var minY = 0;
+var maxX = 0;
 function ResultPageCopy(){
   ChartJS.register(RadialLinearScale, LineElement, Tooltip, Legend, ...registerables,annotationPlugin);
   const [measDate,setMeasDate] = useState('');
@@ -63,7 +65,7 @@ useEffect(()=>{
     let volumeFlowList = [];
     let timeVolumeMaxList = [];
     let timeVolumeMaxListX = [];
-    console.log(totalData)
+    console.log(totalData.fvc.trials)
     if(trials){
       console.log(trials.length);
       let temp = new Array(trials.length).fill(0);
@@ -73,7 +75,6 @@ useEffect(()=>{
       trials.forEach((item)=>{
         timeVolumeList.push(item.graph.timeVolume);
         volumeFlowList.push(item.graph.volumeFlow);
-
         //현 timeVolume에서 최대값 찾기
         timeVolumeMaxList.push(item.results[3].meas);
         timeVolumeMaxListX.push(item.graph.timeVolume[item.graph.timeVolume.length-1].x); //최대 x값 찾기
@@ -89,7 +90,22 @@ useEffect(()=>{
       setTvMax(timeVolumeMaxList);
       graphOption.scales.x.max = parseInt(Math.max(...timeVolumeMaxList));
       setTrigger(0);
+
+      // fvc volumFlowList min
+      const volumFlowListMin = trials[0].graph.volumeFlow.map((item)=>{
+        return item.y;
+      })
+      
+      console.log(Math.floor(Math.min(...volumFlowListMin)));
+      minY = Math.floor((Math.min(...volumFlowListMin)))-2;
+      
+      console.log(minY*2);
+      maxY = Math.abs(minY) * 2;
+
+      maxX = maxY+Math.abs(minY);
     }
+
+
   },[totalData])
 
   const click = ()=>{
@@ -338,6 +354,7 @@ useEffect(()=>{
       x: {
         axios: 'x',
         min: 0,
+        suggestedMax: maxX,
         // max: parseInt(Math.max(...tvMax)),
         ticks:{
           autoSkip: false,
@@ -360,8 +377,9 @@ useEffect(()=>{
           zeroLineColor:'rgb(0, 0, 255)',
         },
         axios: 'y',
-        // min: -9,
+        min : minY,
         grace:"5%",
+        max:maxY,
         ticks: {
           major: true,
           beginAtZero: true,
