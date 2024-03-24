@@ -18,6 +18,7 @@ const MngClncs = () =>{
 
   const cliniciansList = useCallback(async () => {
     setLoading(true)
+    console.log("page : "+page);
     axios.get(`/clinicians?page=${page}&size=10&name=${searchVal}`,{
       headers: {
         Authorization: `Bearer ${accessToken}`
@@ -47,26 +48,27 @@ const MngClncs = () =>{
 
   const cliniciansMngRef = useRef([]);
 
-  const statusChange = (e,id, index) =>{
+  const statusChange = async(e,id, index) =>{
     console.log(e.target.value);
     console.log(id);
-    if(e.target.value === "true"){
+    if(e.target.value === "enabled"){
       console.log(cliniciansMngRef.current[index].children[0])
     }
     else{
       console.log(cliniciansMngRef.current[index].children[1])
     }
     axios.put(`/clinicians/${id}`,{
+      status : e.target.value
+      },{
       headers: {
         Authorization: `Bearer ${accessToken}`
-      }},{
-        status : e.target.value
-      }).then((res)=>{
-        
+      }}).then((res)=>{
+        window.location.reload();
       }).catch((err)=>{
       console.log(err);
       });
   }
+  
 
   return(
     <div className='manage-clinics-container'>
@@ -114,11 +116,11 @@ const MngClncs = () =>{
                   <div className="clinicians-item-status"><p>{item.status==='enabled' ? '승인': '비승인'}</p></div>
                   <div className="clinicians-item-status-management radio-container" ref={(el)=>{cliniciansMngRef.current[index]=el}}>
                     <div className="radioBtn">
-                      <input id={item.clinicianId+"enable"} type='radio' defaultChecked={item.status === "enabled" ? true : false} name={item.clinicianId} className='statusTrue' value='true' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
+                      <input id={item.clinicianId+"enable"} type='radio' defaultChecked={item.status === "enabled" ? true : false} name={item.clinicianId} className='statusTrue' value='enabled' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
                       <label htmlFor={item.clinicianId+"enable"}>승인</label>
                     </div>
                     <div className="radioBtn">
-                      <input id={item.clinicianId+"disable"} type='radio' defaultChecked={item.status === "disabled" ? true : false} name={item.clinicianId} className='statusFalse'value='false' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
+                      <input id={item.clinicianId+"disable"} type='radio' defaultChecked={item.status === "disabled" ? true : false} name={item.clinicianId} className='statusFalse' value='disabled' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
                       <label htmlFor={item.clinicianId+"disable"}>거부</label>
                     </div>
                   </div>
@@ -132,29 +134,6 @@ const MngClncs = () =>{
 
 
       </div>
-      {/* <div>
-        {
-          clinicians.map((item)=>{
-            return(
-              <div>
-                <div>{item.clinicianName}</div>
-                <div>{item.date}</div>
-                <div>{item.roleName}</div>
-                <div>{item.status==='enabled' ? '승인': '비승인'}</div>
-                <div>
-                  <label htmlFor="enable">승인</label>
-                  <input type='radio' defaultChecked={item.status === "enabled" ? true : false} name={item.clinicianId} className='statusTrue' value='true' onChange={(e)=>{statusChange(e,item.clinicianId)}}/>
-                  <label htmlFor="disable">거부</label>
-                  <input type='radio' defaultChecked={item.status === "disabled" ? true : false} name={item.clinicianId} className='statusFalse'value='false' onChange={(e)=>{statusChange(e,item.clinicianId)}}/>
-                </div>
-              </div>
-            )
-          })
-        }
-      </div> */}
-      {/* <div ref={ref}></div> */}
-
-      
     </div>
   );
 }
