@@ -3,7 +3,6 @@ function SerialSetting(props){
   const [data, setData] = useState("");
   const numInputRef = useRef();
   const click = (e, num) => {
-    console.log(e);
     if(num === 0){ //확인
       if(data.length<6){}
       props.select("confirm", data);
@@ -31,7 +30,6 @@ function SerialSetting(props){
   }
   useEffect(()=>{
     if(numInputRef.current.value){
-      console.log(numInputRef.current.value.length)
       if(numInputRef.current.value.length < 6){
         if(!(numInputRef.current.classList.contains("invalid"))){
           numInputRef.current.classList += "invalid"

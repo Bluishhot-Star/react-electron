@@ -6,10 +6,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft,faGear, faCog, faSearch, faCalendar, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FaEdit } from "react-icons/fa";
 import { RiCalendarEventLine } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux"
 
 import { Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom'
 import DateSelector from './DateSelector.js'
-import { useInView } from 'react-intersection-observer';
+import SerialSetting from "../components/SerialSetting.js"
+
 const DeviceSetting= () =>{
     
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
@@ -89,8 +91,33 @@ const DeviceSetting= () =>{
 
   }
 
+  // 씨리얼넘버 설정창
+  let deviceInfo = useSelector((state) => state.deviceInfo )
+  const date= new Date();
+  const [serialSettingStat, setSerialSettingStat] = useState(false);
+  const [serialNum, setSerialNum] = useState("");
+  const [deviceSerialSetting, setDeviceSerialSetting] = useState(false);
+  let serialFunc = async (val, data)=>{
+    if(val=="confirm"){
+      setSerialNum(data);
+      date.setFullYear(2100);
+      await window.api.send("set-cookie", {name:'serialNum',data:data,date:date});
+      // await setCookie("serialNum", data,{expires:date,secure:"true"});
+      setDeviceSerialSetting(true);
+    }
+  }
+  useEffect(()=>{
+    setSerialNum(window.api.get("get-cookies",'serialNum'))
+    if(deviceInfo.id){
+      setDeviceSerialSetting(true);
+    }
+  },[])
+
+
+
   return(
     <div className="deviceList-page-container">
+      {serialSettingStat ? <SerialSetting content="검사를 시작하시겠습니까?" btn={true} onOff={setSerialSettingStat} select={serialFunc} serialNum={serialNum} setSerialNum={setSerialNum} /> : null}
       {dateSelectorStat ? <DateSelector data={inspectionDate} onOff={setDateSelectorStat} select={dateSelect}/> : null}
       <div className='deviceList-page-nav'>
         <div className='backBtn' onClick={()=>{navigator(-1)}}>
@@ -105,7 +132,9 @@ const DeviceSetting= () =>{
             <div>
               디바이스 목록
             </div>
-            <div className="add-device-btn">
+            <div className="add-device-btn" onClick={()=>{
+              setSerialSettingStat(true)
+            }}>
               <FaEdit />제조번호 재설정
             </div>
           </div>
