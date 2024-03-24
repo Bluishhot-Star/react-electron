@@ -5,8 +5,10 @@ import Alert from "../components/Alerts.js"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { RiEyeFill, RiEyeLine } from "react-icons/ri";
+import Confirm from "../components/Confirm.js"
 
 const SubjectSetting = () =>{
+  const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
   const [psw, setPsw] = useState("");
   const [newPsw, setNewPsw] = useState({
     newPassword : "",
@@ -56,31 +58,68 @@ const SubjectSetting = () =>{
     console.log(psw);
     console.log(newPsw.confirmPassword);
     console.log(newPsw.newPassword)
-      //  axios.patch('/auth/change-password',{
-      //   password : psw,
-      //   newPassword : newPsw.newPassword,
-      //   confirmPassword : newPsw.confirmPassword
-      //  },{
-      //   headers: {
-      //     Authorization: `Bearer ${cookies.get('accessToken')}`
-      //   }
-      //  },{withCredentials : true})
-      // .then((res)=>{
-      //   console.log(res);
-      // })
-      // .catch((error)=>{
-        
-      //   console.log(error);alert("ERROR");
-      // })
+    setConfirmStat(true);
   }
 
   const [passType, setPassType] = useState(false);
   const [newPassType, setNewPassType] = useState(false);
   const [newPassChkType, setNewPassChkType] = useState(false);
 
+  const [confirmStat, setConfirmStat] = useState(false);
+  const [msgStat, setMsgStat] = useState(false);
+  const [chgMsg, setChgMsg] = useState("");
+  const selectChg = (val)=>{
+    if(val == "confirm"){
+      axios.patch('/auth/change-password',{
+        password : psw,
+        newPassword : newPsw.newPassword,
+        confirmPassword : newPsw.confirmPassword
+      },{
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      },{withCredentials : true})
+      .then((res)=>{
+        console.log(res);
+        if(res.data.subCode === 0){
+          setChgMsg("비밀번호가 변경되었습니다.")
+          console.log("12342143");
+        }
+        else{
+          if(res.data.subCode === 2102) setChgMsg("입력한 현재 비밀번호가 틀립니다.\n확인 후 다시 입력해주세요.");
+          else if(res.data.subCode === 2101) setChgMsg("비밀번호를 일치하게 입력해주세요.");
+          else if(res.data.subCode === 4009) setChgMsg("현재 비밀번호와 동일합니다.\n변경할 비밀번호를 다시 입력해주세요.");
+          else setChgMsg("비밀번호 변경에 실패했습니다.");
+        }
+      })
+      .catch((error)=>{
+        console.log(error);
+        if(error.response.data.subCode === 2102) setChgMsg("입력한 현재 비밀번호가 틀립니다.\n확인 후 다시 입력해주세요.");
+          else if(error.response.data.subCode === 2101) setChgMsg("비밀번호를 일치하게 입력해주세요.");
+          else if(error.response.data.subCode === 4009) setChgMsg("현재 비밀번호와 동일합니다.\n변경할 비밀번호를 다시 입력해주세요.");
+          else setChgMsg("비밀번호 변경에 실패했습니다.");
+
+      })
+    }
+    else{
+    }
+  }
+  useEffect(()=>{
+    if(chgMsg != ""){
+      setMsgStat(true);
+    }
+  },[chgMsg])
+  const backToSetting = (val)=>{
+    if(val == "confirm"){
+      navigator(-1);
+    }
+  }
+
   return(
     <div className="subjectSetting-page-container">
-      <div className="subjectSetting-page-nav">  
+      {confirmStat ? <Confirm content="비밀번호를 변경하시겠습니까?" btn={true} onOff={setConfirmStat} select={selectChg}/> : null}
+      {msgStat ? <Confirm content={chgMsg} btn={"one"} onOff={setMsgStat} select={backToSetting}/> : null}
+      <div className="subjectSetting-page-nav">
         <div className='backBtn' onClick={()=>{navigator(-1)}}>
           <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
         </div>

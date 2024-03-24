@@ -29,10 +29,15 @@ function Confirm(props){
           </div>
             {
               props.btn ?
-              <div className="confirm-Btn-container">
-                <input className="confirm-Btn confirm-cancel" type="button" value="취소" onClick={(e)=>{e.preventDefault();click(e, 1)}}/>
-                <input className="confirm-Btn confirm-enter" type="button" value="확인" onClick={(e)=>{e.preventDefault();click(e, 0)}}/>
-              </div>
+                props.btn == "one" ?
+                <div className="confirm-Btn-container">
+                  <input className="confirm-Btn confirm-enter" type="button" value="확인" onClick={(e)=>{e.preventDefault();click(e, 0)}}/>
+                </div>
+                :
+                <div className="confirm-Btn-container">
+                  <input className="confirm-Btn confirm-cancel" type="button" value="취소" onClick={(e)=>{e.preventDefault();click(e, 1)}}/>
+                  <input className="confirm-Btn confirm-enter" type="button" value="확인" onClick={(e)=>{e.preventDefault();click(e, 0)}}/>
+                </div>
               :
               <div className="confirm-loader-container">
                 <div id='loader'><span></span></div>
