@@ -14,10 +14,15 @@ let graphOption2XLastGrid;
 let graphOption2YLastGrid;
 let graphOption3XLastGrid;
 let graphOption3YLastGrid;
-
+var maxY = [];
+var minY = [];
+var maxX = [];
+var maxIdx = 0;
 const ReportFvc = (state)=>{
   ChartJS.register(RadialLinearScale, LineElement, Tooltip, Legend, ...registerables,annotationPlugin);
     let navigatorR = useNavigate();
+    const [postIdx,setPostIdx] = useState([])
+
     const location = useLocation();
     const[volumeFlow,setVolumeFlow] = useState([]);
     // const state = location.state;
@@ -214,7 +219,15 @@ useEffect(()=>{
         // min: 0,
         // max: parseInt(Math.max(...tvMax)),
         backgroundColor : '#fff',
-        suggestedMax:15,
+        suggestedMax:()=>{
+
+          if(15 < maxX[maxIdx]){
+
+            return maxX[maxIdx]
+
+          }
+          return 15;
+        },
         
         ticks:{
           color:'black',
@@ -254,8 +267,19 @@ useEffect(()=>{
         backgroundColor : '#fff',
 
         // grace:"8%",
-        suggestedMax:12,
-        suggestedMin:-6,
+        suggestedMax:()=>{
+          if(12 < maxY[maxIdx]){
+            return maxY[maxIdx];
+          }
+          
+          return 12;
+        },
+        suggestedMin:()=>{
+          if(-6 > minY[maxIdx]){
+            return minY[maxIdx];
+          }
+          return -6;
+        },
         ticks: {
           stepSize:3,
           color:'black',
@@ -345,8 +369,55 @@ useEffect(()=>{
       setAllTimeVolumeList(timeVolumeList);
       setTvMax(timeVolumeMaxList);
       graphOption.scales.x.max = parseInt(Math.max(...timeVolumeMaxList));
+
+      // fvc volumFlowList min
+      const minYArray = [];
+      const maxXArray = [];
+      trials.map((item,idx)=>{
+        //y축
+        const volumFlowListMin = item.graph.volumeFlow.map((item)=>{
+          return item.y;
+        });
+        //x축
+        const volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
+          return item.x;
+        });
+        //각각의 y축 최소값
+        var min = Math.floor((Math.min(...volumFlowListMin)))
+        if(min < -4){
+          min -= 2;
+        }
+        minYArray.push(min);
+        //각각의 x축 최대값
+        maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
+      })
+
+      //y축 최소값
+      minY = minYArray;
+      
+      //y축 최대값
+      minY.map((item)=>{
+          maxY.push(Math.abs(item) * 2);
+      })
+      //x축 최대값
+      minY.map((item,idx)=>{
+        maxX.push(maxY[idx]+Math.abs(item));
+      })
+      
+      
+      
+      console.log("y축 최소값 : "+minY)
+      console.log("y축 최대값 : "+maxY)
+      console.log("x축 최대값 : "+maxX)
+      var tmpY = 0;
+      postIdx.forEach((item)=>{
+        if(tmpY < maxY[item]){
+          maxIdx = item;
+          tmpY = maxY[item]
+        }
+      })
     }
-  },[])
+  },[postIdx])
   useEffect(()=>
   {
     let dataset = []
@@ -679,7 +750,132 @@ useEffect(()=>{
             <div className='pre-tirial-container'>
               <div className='pre-tirial'>Pre Tirial {i+1}</div>
             </div>
-            {temp?<Scatter style={graphStyle} ref={chartRef}  data={graphData3(i)} options={graphOption3}/>:<p className='loadingBG'>화면 조정 중..</p>}
+            {temp?<Scatter style={graphStyle} ref={chartRef}  data={graphData3(i)} options={{
+              responsive: false,
+              plugins:{
+                legend: {
+                    display: false,
+                    
+                },annotation: {
+                  annotations: {
+                      box1: {
+                          drawTime: 'beforeDraw',
+                          type: 'box',
+          
+                          backgroundColor: '#fff'
+                      }
+                  },
+                },
+                resizeDelay:0,
+                datalabels: false,
+              },
+              responsive: true,
+              animation:{
+                duration:0
+              },
+              layout: {
+                padding: {
+                  top: 17,
+                  right : 30,
+                  bottom:10
+                }
+              },
+              maintainAspectRatio: false,
+              interaction: false, 
+              elements: {
+                point: {
+                  radius: 0,
+                },
+              },
+              scales: { 
+                x: {
+                  axios: 'x',
+                  suggestedMax: (context)=>{
+                    if(15 < maxX[i]){
+                      return maxX[i];
+                    }
+                    return 15;
+                  },
+          
+                  ticks:{
+                    stepSize:3,
+                    color:'black',
+                    font: {
+                      size: 8,
+                    },
+                    callback: function(value, index, ticks) {
+                      graphOption3XLastGrid = index;
+                      return value
+                    },
+                    autoSkip: false,
+                    beginAtZero: false,
+                  },
+                  grid:{
+                    color: function(context) {
+                      if (context.index === 0 || context.index === graphOption3XLastGrid){
+                        return 'black';
+                      }
+                      else{
+                        return 'rgba(211, 211, 211, 1)';
+                      }
+                    },
+                    lineWidth:2,
+                    tickWidth:0
+                  }
+                },
+                y: {
+                  gridLines:{
+                    zeroLineColor:'#000000',
+                  },
+                  axios: 'y',
+                  // min: -9,
+                  // grace:"8%",
+                  suggestedMax:(context)=>{
+                    if(12 < maxY[i]){
+                      return maxY[i];
+                    }
+                    return 12;
+                  },
+                  suggestedMin:(context)=>{
+                    if(-6 > minY[i]){
+                      return minY[i];
+                    }
+                    return -6;
+                  },
+                  ticks: {
+                    color:'black',
+                    font: {
+                      size: 8,
+                    },
+                    callback: function(value, index, ticks) {
+                      graphOption3YLastGrid = index;
+                      return value
+                    },
+                    major: true,
+                    beginAtZero: true,
+                    stepSize : 1,
+                    fontSize : 3,
+                    textStrokeColor: 10,
+                    precision: 1,
+                  },
+                  grid:{
+                    color: function(context) {
+                      if (context.index === 0 || context.index === graphOption3YLastGrid){
+                        return 'black';
+                      }
+                      else{
+                        return 'rgba(211, 211, 211, 1)';
+                      }
+                    },
+                    // zeroLineColor:'black',
+                    // color:'rgba(211, 211, 211, 1)',
+          
+                    lineWidth:2,
+                    tickWidth:0
+                  }
+                },
+              },
+            }}/>:<p className='loadingBG'>화면 조정 중..</p>}
           </div>
         );
       }else{
@@ -721,19 +917,21 @@ useEffect(()=>{
   useEffect(()=>{
     let pr = false;
     let po = false;
-    state.data.fvcSvc.trials.forEach((item) => {
-
+    const idxArray = [];
+    state.data.fvcSvc.trials.forEach((item,idx) => {
         if(item.best === true){
+            idxArray.push(idx);
             if(item.bronchodilator === 'pre' && !pr){
                 pr = true;
                 setPre({...pre, tf : true, data :item})
             }else if(item.bronchodilator === 'post' && !po){
                 po = true
+                
                 setPost({...post, tf : true, data :item});
             }
         }     
     });
-    
+    setPostIdx(idxArray);
   },[])
 
   const res = () =>{
