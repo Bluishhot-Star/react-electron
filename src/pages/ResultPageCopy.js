@@ -65,9 +65,7 @@ useEffect(()=>{
     let volumeFlowList = [];
     let timeVolumeMaxList = [];
     let timeVolumeMaxListX = [];
-    console.log(totalData.fvc.trials)
     if(trials){
-      console.log(trials.length);
       let temp = new Array(trials.length).fill(0);
       setGraphOnOff(temp);
 
@@ -90,7 +88,6 @@ useEffect(()=>{
       setTvMax(timeVolumeMaxList);
       graphOption.scales.x.max = parseInt(Math.max(...timeVolumeMaxList));
       setTrigger(0);
-      console.log(trials)
 
 
       // fvc volumFlowList min
@@ -107,7 +104,6 @@ useEffect(()=>{
         });
         //각각의 y축 최소값
         var min = Math.floor((Math.min(...volumFlowListMin)))
-        console.log(min)
         if(min < -4){
           min -= 2;
         }
@@ -115,65 +111,41 @@ useEffect(()=>{
         //각각의 x축 최대값
         maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
       })
-      console.log(minYArray)
-      console.log(maxXArray)
       //y축 최소값
       minY = Math.min.apply(null,minYArray);
       
-      console.log(minY);
       //y축 최대값
       maxY = Math.abs(minY) * 2;
       //x축 최대값
       maxX = maxY+Math.abs(minY);
       
-      console.log(maxX)
       //계산한 x축 보다 실제 x축이 더 클 경우
       if(maxX < Math.max.apply(null,maxXArray)){
         maxX = Math.max.apply(null,maxXArray);
         if(maxX % 2 != 0){
-          console.log(maxX)
           maxX -= 1;
         }
         minY = -maxX/3*2;
-        console.log(minY)
-        console.log(Math.floor(parseFloat(minY-parseInt(minY))*10)/10)
         //소수점이 0.7이라면
         if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
-          console.log(Math.floor(minY-parseInt(minY)))
           minY -= 0.1;
         }
         maxY = Math.abs(minY*2);
         
       }
-      console.log(minY)
       if(minY % 2 !=0 && minY <= -2){
         minY -= 1;
       }
-      console.log("y축 최소값 : "+minY)
-      console.log("y축 최대값 : "+maxY)
-      console.log("x축 최대값 : "+maxX)
-      // console.log(Math.floor(Math.min(...volumFlowListMin)));
-      // minY = Math.floor((Math.min(...volumFlowListMin)))-2;
-      
-      // console.log(minY*2);
-      // 
 
-      // maxX = maxY+Math.abs(minY);
-      // const max = Math.max(...volumFlowListMaxX)
-      // console.log(max)
     }
 
 
   },[totalData])
 
-  const click = ()=>{
-    console.log(location.state);
-    console.log(state.info[0].content);
-  }
+
   
   const updateData = ()=>{
     let patientDate = location.state;
-    console.log(location.state)
     patientDate['update'] = true;
     navigator('/memberList/addPatient', {state: patientDate})
   }
@@ -246,7 +218,6 @@ useEffect(()=>{
      */
     
     // 누른거 없을떄 onoff[1,1,1, ...]
-    console.log("Trigger : "+trigger);
     if(trigger == 0){
       let temp = [...graphOnOff].fill(0);
       setGraphOnOff(temp);
@@ -269,7 +240,6 @@ useEffect(()=>{
     })
     setTimeVolume(temp);
     setVolumeFlow(temp2);
-    console.log(temp);
 
   },[trigger])
   
@@ -297,7 +267,6 @@ useEffect(()=>{
       }
     })
     setSvcGraph(temp);
-    console.log(temp);
   },[svcTrigger])
 
   useEffect(()=>{
@@ -316,7 +285,6 @@ useEffect(()=>{
         //현 svc 최대값 찾기
         svcMaxList.push(parseFloat(item.results[0].meas)+3);
       })
-    console.log(svcTrials)
       setSvcGraph(svcGraphList);
       setAllSvcGraph(svcGraphList);
       setSvcMax(svcMaxList);
@@ -327,7 +295,6 @@ useEffect(()=>{
   useEffect(()=>{
     if(FvcSvc=="fvc" && simpleResultsRef.current[0]){
       graphOnOff.forEach((item, index)=>{
-        console.log("adsf")
         if(item == 1){
           simpleResultsRef.current[index].classList+=" selected";
           simpleResultsRef.current[index].style+="";
@@ -443,7 +410,6 @@ useEffect(()=>{
           major: true,
           beginAtZero: true,
           stepSize:(context)=>{
-            console.log(context.scale.min);
             if(context.scale.min === -1){
               return 0.5;
             }
@@ -484,7 +450,6 @@ useEffect(()=>{
       
     },
     afterDraw: function (chart, easing) {
-      console.log(chart);
     },
     
     responsive: true,
@@ -699,7 +664,6 @@ useEffect(()=>{
     let time = setTimeout(()=>{
       let time2 = setTimeout(() => {
         let dataset = [];
-        console.log(volumeFlow)
         volumeFlow.forEach((item,index)=>{
           dataset.push(
             {
@@ -718,7 +682,6 @@ useEffect(()=>{
             datasets: dataset,
           }
           let time4 = setTimeout(() => {
-            console.log(data)
             setGraphData(data);
           }, 50);
           return()=>{
@@ -867,7 +830,6 @@ useEffect(()=>{
   },[])
 
   const dateSelect = (select) =>{
-    console.log(select);
     setInspectionDate(select);
     setDateSelectIdx(null);
   }
@@ -882,8 +844,7 @@ useEffect(()=>{
         headers: {
           Authorization: `Bearer ${accessToken}`
         }}).then((res)=>{
-          console.log(res)
-          console.log(inspectionDate);
+  
           if(res.data.response.length !== 0){
             setDate(res.data.response);
             report(res.data.response);
@@ -928,14 +889,12 @@ useEffect(()=>{
   },[dateSelectIdx])
   
   const report = async(tDate)=>{
-    console.log(tDate)
     setMeasDate(tDate[0]);
     await axios.get(`/v3/subjects/${totalData.chartNumber}/types/fvc/results/${tDate[0]}` , {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     }).then((res)=>{
-      console.log(res.data.response);
       if(res.data.subCode === 2004){
         setData1(res.data.message);
       }
@@ -948,7 +907,6 @@ useEffect(()=>{
         Authorization: `Bearer ${accessToken}`
       }
     }).then((res)=>{
-      console.log(res);
       if(res.data.subCode === 2004){
         setData2(res.data.message);
       }
@@ -976,8 +934,7 @@ useEffect(()=>{
       })
     }
     if(goTO){
-      console.log("goTOTO");
-      console.log(data1)
+
       setTotalData({
         info : state.info,
         fvc : Object.keys(data1).length !== 0 ? data1 : 'Empty resource',
@@ -1000,7 +957,6 @@ useEffect(()=>{
     }).catch((err)=>{
       console.log(err);
     })
-    console.log(date.split(' ')[0]);
     report(date.split(' '));
 
   }
@@ -1028,16 +984,13 @@ useEffect(()=>{
     
   },[totalData, FvcSvc])
   useEffect(()=>{
-    console.log(state)
     if(FvcSvc === 'fvc'){
-      console.log(totalData)
       setRep({
         fvcSvc : totalData.fvc,
         date: measDate !== '' ? measDate[0] : state.date[0],
         birth : totalData.birth
       })
     }else{
-      console.log(totalData.svc)
       setRep({
         fvcSvc : totalData.svc,
         date: measDate !== '' ? measDate[0] : state.date[0],
@@ -1122,7 +1075,7 @@ useEffect(()=>{
             </div>
           </div>
           <div className="patient-info-containerC">
-            <span onClick={()=>{console.log(rep)}}>환자 정보</span>
+            <span>환자 정보</span>
             <div className="patient-infoC">
               <div className="title">이름</div>
               <div className="content">{totalData.info === '' || totalData.info === 'Empty resource' ? '': totalData.info.name}</div>
@@ -1217,7 +1170,7 @@ useEffect(()=>{
                 FvcSvc == "fvc" ?
                 totalData.fvc === '' || totalData.fvc === 'Empty resource'? <div className='empty-simple-container'></div> :
                 totalData.fvc.trials.map((item, index)=>(
-                  <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{console.log(simpleResultsRef.current[index]);console.log(item.measurementId);selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
+                  <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
                       <FontAwesomeIcon className='deleteIcon' icon={faSquareXmark} style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
                       <div className='simple-result-title-date'>
@@ -1271,7 +1224,7 @@ useEffect(()=>{
                 :
                 totalData.svc === "Empty resource" ? null:
                 totalData.svc.trials.map((item, index)=>(
-                  <div ref={(el)=>{svcSimpleResultsRef.current[index]=el}} onClick={()=>{console.log(svcSimpleResultsRef.current[index]);console.log(item.measurementId);selectSvcGraph(index)}} key={item.measurementId}  className='simple-result-container'>
+                  <div ref={(el)=>{svcSimpleResultsRef.current[index]=el}} onClick={()=>{selectSvcGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
                       <FontAwesomeIcon className='deleteIcon' icon={faSquareXmark} style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
                       <div className='simple-result-title-date'>

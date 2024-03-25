@@ -404,11 +404,7 @@ useEffect(()=>{
         maxX.push(maxY[idx]+Math.abs(item));
       })
       
-      
-      
-      console.log("y축 최소값 : "+minY)
-      console.log("y축 최대값 : "+maxY)
-      console.log("x축 최대값 : "+maxX)
+
       var tmpY = 0;
       postIdx.forEach((item)=>{
         if(tmpY < maxY[item]){
@@ -482,7 +478,6 @@ useEffect(()=>{
       }
     },
     afterDraw: function (chart, easing) {
-      console.log(chart);
     },
     
     responsive: true,

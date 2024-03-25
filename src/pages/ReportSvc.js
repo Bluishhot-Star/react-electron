@@ -21,7 +21,6 @@ const ReportSvc = (state)=>{
     const[volumeFlow,setVolumeFlow] = useState([]);
     const [max,setMax] = useState(1);
     // const state = location.state;
-    console.log(state)
 
     const [top,setTop] = useState({
       name : '',
@@ -127,8 +126,7 @@ useEffect(()=>{
   useEffect(()=>
   {
     let dataset = []
-    console.log(pre)
-    console.log(post)
+
     if(pre.tf){
         dataset.push(
             {
@@ -143,7 +141,6 @@ useEffect(()=>{
         )
     }
     if(post.tf){
-        console.log("post")
         dataset.push(
             {
               label: "",
@@ -161,7 +158,6 @@ useEffect(()=>{
       labels: '',
       datasets: dataset,
     }
-    console.log(data)
     setGraphData(data);
   },[pre,post])
 
@@ -216,7 +212,6 @@ useEffect(()=>{
             size: 8,
           },
           callback: (value, index, ticks) =>{
-            console.log(index);
             graphOptionXLastGrid = index;
             return value
           },
@@ -226,7 +221,6 @@ useEffect(()=>{
           lineWidth:2,
           tickWidth:0,
           color: function(context) {
-            console.log(context);
             if (context.index === 0 || context.index === graphOptionXLastGrid){
               return 'black';
             }
@@ -252,7 +246,6 @@ useEffect(()=>{
             size: 8,
           },
           callback: (value, index, ticks) =>{
-            console.log(value)
 
           if(yMax === undefined || Math.abs(value) > yMax){
             yMax = Math.abs(value);
@@ -283,7 +276,6 @@ useEffect(()=>{
     },
   }
   useEffect(()=>{
-    console.log(chartRef)
     setTimeout(() => {
       
       setTemp(true);
@@ -297,8 +289,7 @@ useEffect(()=>{
 
   const fourthRendering = () => {
     const result = [];
-    console.log(state.data.fvcSvc.trials[0].results[0].meas)
-    console.log(state.data.fvcSvc.trials.length)
+
 
     for (let i = 0; i < 8; i++) {
       
@@ -338,7 +329,6 @@ useEffect(()=>{
     state.data.fvcSvc.trials.forEach((item) => {
 
         if(item.best === true){
-        console.log(item)
             if(item.bronchodilator === 'pre' && !pr){
                 pr = true;
                 setPre({...pre, tf : true, data :item})
