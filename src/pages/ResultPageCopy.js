@@ -90,19 +90,77 @@ useEffect(()=>{
       setTvMax(timeVolumeMaxList);
       graphOption.scales.x.max = parseInt(Math.max(...timeVolumeMaxList));
       setTrigger(0);
+      console.log(trials)
+
 
       // fvc volumFlowList min
-      const volumFlowListMin = trials[0].graph.volumeFlow.map((item)=>{
-        return item.y;
+      const minYArray = [];
+      const maxXArray = [];
+      trials.map((item,idx)=>{
+        //y축
+        const volumFlowListMin = item.graph.volumeFlow.map((item)=>{
+          return item.y;
+        });
+        //x축
+        const volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
+          return item.x;
+        });
+        //각각의 y축 최소값
+        var min = Math.floor((Math.min(...volumFlowListMin)))
+        console.log(min)
+        if(min < -4){
+          min -= 2;
+        }
+        minYArray.push(min);
+        //각각의 x축 최대값
+        maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
       })
+      console.log(minYArray)
+      console.log(maxXArray)
+      //y축 최소값
+      minY = Math.min.apply(null,minYArray);
       
-      console.log(Math.floor(Math.min(...volumFlowListMin)));
-      minY = Math.floor((Math.min(...volumFlowListMin)))-2;
-      
-      console.log(minY*2);
+      console.log(minY);
+      //y축 최대값
       maxY = Math.abs(minY) * 2;
-
+      //x축 최대값
       maxX = maxY+Math.abs(minY);
+      
+      console.log(maxX)
+      //계산한 x축 보다 실제 x축이 더 클 경우
+      if(maxX < Math.max.apply(null,maxXArray)){
+        maxX = Math.max.apply(null,maxXArray);
+        if(maxX % 2 != 0){
+          console.log(maxX)
+          maxX -= 1;
+        }
+        minY = -maxX/3*2;
+        console.log(minY)
+        console.log(Math.floor(parseFloat(minY-parseInt(minY))*10)/10)
+        //소수점이 0.7이라면
+        if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
+          console.log(Math.floor(minY-parseInt(minY)))
+          minY -= 0.1;
+        }
+        maxY = Math.abs(minY*2);
+        
+      }
+      console.log(minY)
+      if(minY % 2 !=0 && minY <= -2){
+        minY -= 1;
+      }
+      console.log("y축 최소값 : "+minY)
+      console.log("y축 최대값 : "+maxY)
+      console.log("x축 최대값 : "+maxX)
+      // console.log(Math.floor(Math.min(...volumFlowListMin)));
+      // minY = Math.floor((Math.min(...volumFlowListMin)))-2;
+      
+      // console.log(minY*2);
+      // 
+
+      // maxX = maxY+Math.abs(minY);
+      // const max = Math.max(...volumFlowListMaxX)
+      // console.log(max)
     }
 
 
@@ -381,9 +439,16 @@ useEffect(()=>{
         grace:"5%",
         max:maxY,
         ticks: {
+          precision:10,
           major: true,
           beginAtZero: true,
-          stepSize : 1,
+          stepSize:(context)=>{
+            console.log(context.scale.min);
+            if(context.scale.min === -1){
+              return 0.5;
+            }
+            return 1;
+          },
           fontSize : 10,
           textStrokeColor: 10,
           precision: 1,
