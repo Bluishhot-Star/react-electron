@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 function SerialSetting(props){
   const [data, setData] = useState("");
   const numInputRef = useRef();
@@ -7,9 +7,6 @@ function SerialSetting(props){
       if(data.length<6){}
       props.select("confirm", data);
     }
-    // else if(num === 1){
-      
-    // }
     props.onOff(false);
   }
   useEffect(()=>{

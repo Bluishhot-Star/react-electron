@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Alert from "../components/Alerts.js"
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
+import { FaChevronLeft } from "react-icons/fa";
 import { RiEyeFill, RiEyeLine } from "react-icons/ri";
 
 const SignUpForm = () =>{
@@ -431,7 +430,7 @@ const SignUpForm = () =>{
       }
       <div className="signUp-title"><p>회원가입</p></div>
       <div className='backBtn' onClick={()=>{navigator(-1)}}>
-        <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+        <FaChevronLeft style={{color: "#4b75d6",}} />
       </div>
       <form onSubmit={handleSubmit}>
       <div className="signUp-field">

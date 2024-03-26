@@ -246,7 +246,7 @@ ipcMain.on("getConnectedDevice", (event, args)=>{
 
 
 ipcMain.on('set-cookie', async(event, data)=>{
-  console.log(data.name)
+  // console.log(data.name)
   await session.defaultSession.cookies.set({
     url : "http://localhost:3000", // 기본적으로 입력 해주어야함
     name : data.name,
@@ -264,7 +264,7 @@ ipcMain.on('get-cookies', (event,data) => {
 
   session.defaultSession.cookies.get(value).then((cookies) => {
     try {
-      console.log(cookies)
+      // console.log(cookies)
       event.returnValue = cookies[0].value
     } catch (error) {
       event.returnValue = undefined

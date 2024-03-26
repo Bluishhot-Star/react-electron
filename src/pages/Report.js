@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect} from 'react';
-import axios from 'axios';
-// import background from "../../public/FVC_v6_page-0001.jpg";
 
-import { Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
 import html2canvas from "html2canvas";
 import img from '../img/FVC_v6.svg'
 const Report = (state)=>{

@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
-import Alert from "../components/Alerts.js"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { FaChevronLeft } from "react-icons/fa";
+
 import { RiEyeFill, RiEyeLine } from "react-icons/ri";
 import Confirm from "../components/Confirm.js"
 
@@ -122,7 +121,7 @@ const SubjectSetting = () =>{
       {msgStat ? <Confirm content={chgMsg} btn={"one"} onOff={setMsgStat} select={backToSetting}/> : null}
       <div className="subjectSetting-page-nav">
         <div className='backBtn' onClick={()=>{navigator(-1)}}>
-          <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+          <FaChevronLeft style={{color: "#4b75d6",}} />
         </div>
         <p>유저 정보 변경</p>
       </div>

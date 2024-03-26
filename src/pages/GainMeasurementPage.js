@@ -1,21 +1,18 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
-import Alert from "../components/Alerts.js"
-import { Routes, Route, Link,useNavigate,useLocation } from 'react-router-dom'
-import {} from "@fortawesome/fontawesome-svg-core"
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { useNavigate,useLocation } from 'react-router-dom'
 import Confirm from "../components/Confirm.js"
 import { debounce } from 'lodash'
+
 import { RiLungsLine } from "react-icons/ri";
+import { FaRegCheckCircle, FaChevronLeft } from "react-icons/fa";
 import { TbTrash } from "react-icons/tb";
-import { FaRegCheckCircle } from "react-icons/fa";
-import { faChevronLeft, faPersonMilitaryToPerson } from '@fortawesome/free-solid-svg-icons'
+
+
 import {registerables,Chart as ChartJS,RadialLinearScale,LineElement,Tooltip,Legend,} from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import { changeDeviceInfo, reset } from "./../deviceInfo.js"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 const GainMeasurementPage = () =>{
   ChartJS.register(RadialLinearScale, LineElement, Tooltip, Legend, ...registerables,annotationPlugin);
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
@@ -1210,7 +1207,7 @@ const [calivration,setCalivration] = useState({
       {readyAlert ? <Confirm content="준비 중입니다..." btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
       <div className="gain-measurement-page-nav">
         <div className='gain-measurement-page-backBtn' onClick={()=>{navigatorR(-1)}}>
-            <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+            <FaChevronLeft style={{color: "#4b75d6",}}/>
         </div>
         <p onClick={()=>{
 

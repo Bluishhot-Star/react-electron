@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
-import {Cookies, useCookies } from 'react-cookie';
 
-import { Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { FaChevronLeft, FaChevronDown } from "react-icons/fa";
 const AddPatientCopy = ()=>{
 
   const [examinee,setExaminee] = useState({
@@ -332,7 +330,7 @@ const AddPatientCopy = ()=>{
         
         <div className="add-patient-page-nav">
           <div className='add-patient-backBtn' onClick={()=>{navigator(-1)}}>
-            <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+            <FaChevronLeft style={{color: "#4b75d6",}} />
           </div>
           <p onClick={()=>{console.log(examinee)}}>환자 정보 입력</p>
 
@@ -444,7 +442,7 @@ const AddPatientCopy = ()=>{
                   </option>
                 ))}
               </select>
-              <FontAwesomeIcon className='admin-chevronDown' icon={faChevronDown} style={{color: "#4b75d6",}} />
+              <FaChevronDown className='admin-chevronDown'  style={{color: "#4b75d6",}} />
             </div>
             <div className="info-input-container">
               <label htmlFor="">흡연경험</label>

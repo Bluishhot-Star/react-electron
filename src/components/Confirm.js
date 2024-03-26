@@ -6,7 +6,6 @@ function Confirm(props){
       props.select("confirm");
     }
     else if(num === 1){
-//       props.select("disconfirm");
       props.select("cancel");
     }
     props.onOff(false);

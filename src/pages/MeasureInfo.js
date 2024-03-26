@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
 
-import { Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
+import { FaChevronLeft } from "react-icons/fa";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+
+
 const MeasureInfo = ()=>{
   
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
@@ -146,7 +147,7 @@ const MeasureInfo = ()=>{
       <div className="measure-info-page-container">
         <div className="measure-info-page-nav">
           <div className='measure-info-backBtn' onClick={()=>{navigatorR(-1)}}>
-            <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+            <FaChevronLeft style={{color: "#4b75d6",}}/>
           </div>
           <p>검사 정보</p>
         </div>

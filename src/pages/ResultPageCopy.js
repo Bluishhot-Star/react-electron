@@ -2,16 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSquareXmark } from '@fortawesome/free-solid-svg-icons'
+import { FaSquareXmark } from "react-icons/fa6";
+
 import { debounce } from 'lodash'
 import { registerables,Chart as ChartJS,RadialLinearScale,LineElement,Tooltip,Legend} from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { useLocation } from 'react-router-dom';
 import DateSelector from './DateSelector.js'
 import annotationPlugin from 'chartjs-plugin-annotation';
-// import PdfView from "../components/PdfView.js";
-// import { PDFViewer } from '@react-pdf/renderer';
+
 import { RiCalendarEventLine } from "react-icons/ri";
 import { HiOutlineCog } from "react-icons/hi";
 import { BiSolidFileJpg } from "react-icons/bi";
@@ -28,7 +27,6 @@ function ResultPageCopy(){
   const state = location.state;
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
   const [FvcSvc, setFvcSvc] = useState("fvc"); //fvc, svc
-  const [info, setInfo] = useState();
   const [tvMax, setTvMax] = useState([10]);
   const [totalData,setTotalData] = useState({
     info:"Empty resource",
@@ -1172,7 +1170,7 @@ useEffect(()=>{
                 totalData.fvc.trials.map((item, index)=>(
                   <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
-                      <FontAwesomeIcon className='deleteIcon' icon={faSquareXmark} style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
+                      <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
                       <div className='simple-result-title-date'>
                         <div className='simple-result-title'>{item.bronchodilator}</div>
                         <div className='simple-result-date'>({item.date})</div>
@@ -1226,7 +1224,7 @@ useEffect(()=>{
                 totalData.svc.trials.map((item, index)=>(
                   <div ref={(el)=>{svcSimpleResultsRef.current[index]=el}} onClick={()=>{selectSvcGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
-                      <FontAwesomeIcon className='deleteIcon' icon={faSquareXmark} style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
+                      <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
                       <div className='simple-result-title-date'>
                         <div className='simple-result-title'>{item.bronchodilator}</div>
                         <div className='simple-result-date'>({item.date})</div>

@@ -1,16 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
-import { Routes, Route, Link, useNavigate, useLocation} from 'react-router-dom'
+import { useNavigate, useLocation} from 'react-router-dom'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft,faGear, faCog, faSearch, faCalendar, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+
 
 
 import DateSelector from './DateSelector.js'
 import { useInView } from 'react-intersection-observer';
-import { useDispatch, useSelector } from "react-redux"
-import { changeDeviceInfo } from "../deviceInfo.js"
+import { useSelector } from "react-redux"
+import { FaSearch } from "react-icons/fa";
 import { HiOutlineCog } from "react-icons/hi";
 const MemberListCopy = ()=>{
   let deviceInfo = useSelector((state) => state.deviceInfo ) 
@@ -182,7 +180,7 @@ const MemberListCopy = ()=>{
               </div>
             </div>
             <div className="search-patient-containerC">
-              <FontAwesomeIcon className='searchIconC' icon={faSearch} style={{color: "#387fb9",}} />
+              <FaSearch className='searchIconC' style={{color: "#387fb9",}} />
               <form 
                 onSubmit={(e)=>{
                 e.preventDefault(); // 전체 리렌더링 방지

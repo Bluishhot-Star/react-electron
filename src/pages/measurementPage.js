@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect, useMemo, useCallback} from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
+import { useCookies } from 'react-cookie';
 import Confirm from "../components/Confirm.js"
 import { useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { RiLungsLine } from "react-icons/ri";
-import { faChevronLeft, faSquareXmark } from '@fortawesome/free-solid-svg-icons'
-import { FaBluetoothB } from "react-icons/fa6";
-import {} from "@fortawesome/fontawesome-svg-core"
+
+import { FaBluetoothB, FaSquareXmark } from "react-icons/fa6";
+import { FaChevronLeft } from "react-icons/fa";
+
 import { debounce } from 'lodash'
 import {registerables,Chart as ChartJS,RadialLinearScale,LineElement,Tooltip,Legend,} from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
@@ -1702,7 +1702,7 @@ useEffect(()=>{
       {readyAlert ? <Confirm content={"SpiroKit 동작 준비 중 입니다.\n잠시만 기다려주세요."} btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
         <div className="measurement-page-nav">
           <div className='measurement-page-backBtn' onClick={()=>{setBackStat(true)}}>
-            <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6"}} />
+            <FaChevronLeft style={{color: "#4b75d6",}}/>
           </div>
           <p>{location.state.name}</p>
           <div className='graph-status-container'>
@@ -1941,7 +1941,7 @@ useEffect(()=>{
                 totalData.trials.map((item, index)=>(
                   <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{console.log(simpleResultsRef.current[index]);console.log(item.measurementId);selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                   <div className='simple-result-title-container'>
-                  <FontAwesomeIcon className='deleteIcon' icon={faSquareXmark} style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); if(!meaStart){simpleResult(item.measurementId, date);}}}/>
+                  <FaSquareXmark className='deleteIcon'  style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); if(!meaStart){simpleResult(item.measurementId, date);}}}/>
                   <div className='simple-result-title-date'>
                     <div className='simple-result-title'>{item.bronchodilator}</div>
                     <div className='simple-result-date'>({item.date})</div>

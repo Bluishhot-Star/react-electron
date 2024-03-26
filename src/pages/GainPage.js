@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect} from 'react';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom'
-import Alert from "../components/Alerts.js"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+
+import { FaChevronLeft } from "react-icons/fa";
 
 const GainPage = () =>{
   const [gainInfo, setGainInfo] = useState({
@@ -32,7 +31,7 @@ const GainPage = () =>{
     <div className="gain-info-page-container">
       <div className="gain-info-page-nav">  
         <div className='backBtn' onClick={()=>{navigator(-1)}}>
-          <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+          <FaChevronLeft style={{color: "#4b75d6",}}/>
         </div>
         <p>보정 정보</p>
       </div>

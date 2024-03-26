@@ -1,7 +1,6 @@
 /*eslint-disable*/  // Lint제거 (warning 메세지 제거)
 
 import './App.css';
-import { useState, useEffect, useRef } from 'react';
 import LoginForm from './pages/LoginForm.js'
 import SignUpForm from './pages/SignUpForm.js'
 // import MemberList from './pages/MemberList'
@@ -9,8 +8,6 @@ import SignUpForm from './pages/SignUpForm.js'
 import axios from 'axios';
 import { Cookies, useCookies } from 'react-cookie';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import MeasureInfo from './pages/MeasureInfo.js';
 // import ResultPage from './pages/ResultPage.js'
 import DetailPage from './pages/DetailPage.js'

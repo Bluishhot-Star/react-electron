@@ -1,15 +1,11 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
-import Alert from "../components/Alerts.js"
 import { useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { FaBluetoothB } from "react-icons/fa6";
-import {} from "@fortawesome/fontawesome-svg-core"
+import { FaChevronLeft } from "react-icons/fa";
+
 import { useDispatch, useSelector } from "react-redux"
 import { changeDeviceInfo, reset } from "./../deviceInfo.js"
-import { current } from '@reduxjs/toolkit';
 import SerialSetting from "../components/SerialSetting.js"
 
 const SettingPage = () =>{
@@ -354,7 +350,7 @@ window.api.receive("connectedBLEDevice", (data)=>{
       {serialSettingStat ? <SerialSetting content="검사를 시작하시겠습니까?" btn={true} onOff={setSerialSettingStat} select={serialFunc} serialNum={serialNum} setSerialNum={setSerialNum} /> : null}
         <div className="setting-page-nav" onClick={()=>{console.log()}}>
           <div className='setting-page-backBtn' onClick={()=>{navigatorR(-1)}}>
-            <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+            <FaChevronLeft  style={{color: "#4b75d6",}} />
           </div>
           <p onClick={()=>{
             // console.log(txCharRef.current)

@@ -1,11 +1,8 @@
 import { useState, useRef, useEffect} from 'react';
-import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
-import Alert from "../components/Alerts.js"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft,faGear, faCog, faSearch, faCalendar, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { FaChevronLeft } from "react-icons/fa";
 
-import { Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom'
+
+import { useNavigate,useLocation } from 'react-router-dom'
 import { MdLightbulbOutline } from "react-icons/md";
 const ManagementSetting= () =>{
     
@@ -113,7 +110,7 @@ const ManagementSetting= () =>{
     <div className="managementSetting-page-container">
       <div className="managementSetting-page-nav">  
         <div className='backBtn' onClick={()=>{navigator(-1)}}>
-          <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+          <FaChevronLeft style={{color: "#4b75d6",}}/>
         </div>
         <p>검사 설정</p>
       </div>

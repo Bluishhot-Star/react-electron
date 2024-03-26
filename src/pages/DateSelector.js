@@ -1,9 +1,6 @@
 import {useEffect, useState, useRef} from "react";
 
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { IoMdRefresh } from "react-icons/io";
 function DateSelector(props){
     const [startEnd, setStartEnd] = useState({
       start : "",
@@ -68,8 +65,9 @@ function DateSelector(props){
     return (
       <div className="dateSelector-bg" onClick={(e)=>{click(e, 0)}}>
         <div className="dateSelector-container" onClick={(e)=>{e.stopPropagation(); return;}}>
-          <div className="dateSelector-logo"><p>The SpiroKit</p></div>
-          <FontAwesomeIcon onClick={(e)=>{refresh()}} id="초기화" className='date-resetBtn' icon={faRefresh} style={{color: "#4b75d6",}} />
+          <div className="dateSelector-logo"><img src={process.env.PUBLIC_URL + '/spriokit.svg'} /></div>
+          {/* <FontAwesomeIcon onClick={(e)=>{refresh()}} id="초기화" className='date-resetBtn' icon={faRefresh} style={{color: "#4b75d6",}} /> */}
+          <IoMdRefresh onClick={(e)=>{refresh()}} id="초기화" className='date-resetBtn'   />
           {/* <input type="button" name="검사" value="기간 선택" /> */}
           <div className="dateInput-container">
             <div className="dateInputItem-container">

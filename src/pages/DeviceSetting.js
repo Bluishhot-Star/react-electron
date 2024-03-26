@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
-import Alert from "../components/Alerts.js"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft,faGear, faCog, faSearch, faCalendar, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 import { FaEdit } from "react-icons/fa";
 import { RiCalendarEventLine } from "react-icons/ri";
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 
-import { Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
 import DateSelector from './DateSelector.js'
 import SerialSetting from "../components/SerialSetting.js"
 
@@ -121,7 +119,7 @@ const DeviceSetting= () =>{
       {dateSelectorStat ? <DateSelector data={inspectionDate} onOff={setDateSelectorStat} select={dateSelect}/> : null}
       <div className='deviceList-page-nav'>
         <div className='backBtn' onClick={()=>{navigator(-1)}}>
-          <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+          <FaChevronLeft style={{color: "#4b75d6",}}/>
         </div>
         <p>디바이스 관리</p>
       </div>
@@ -198,7 +196,7 @@ const DeviceSetting= () =>{
                     <div>보정 일시</div>
                     <div className='calibration-item-date'>{item.date}</div>
                     <div className="calibration-item-right-chevron">
-                      <FontAwesomeIcon icon={faChevronRight} style={{color: "#4b75d6",}} />
+                      <FaChevronRight style={{color: "#4b75d6",}}/>
                     </div>
                   </div>
                 ))}

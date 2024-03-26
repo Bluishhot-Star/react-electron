@@ -1,20 +1,17 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
-import Alert from "../components/Alerts.js"
-import { Routes, Route, Link,useNavigate,useLocation } from 'react-router-dom'
-import {} from "@fortawesome/fontawesome-svg-core"
+import { useNavigate,useLocation } from 'react-router-dom'
 import Confirm from "../components/Confirm.js"
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { debounce } from 'lodash'
-import { faChevronLeft, faPersonMilitaryToPerson } from '@fortawesome/free-solid-svg-icons'
+import { FaChevronLeft } from "react-icons/fa";
+
 import { RiLungsLine } from "react-icons/ri";
 import { FaMagnifyingGlassChart } from "react-icons/fa6";
 import { RxImage } from "react-icons/rx";
 import {registerables,Chart as ChartJS,RadialLinearScale,LineElement,Tooltip,Legend,} from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import { changeDeviceInfo, reset } from "../deviceInfo.js"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { useInView } from 'react-intersection-observer';
 import html2canvas from "html2canvas";
 const VerificationPage = () =>{
@@ -1294,7 +1291,7 @@ const [calivration,setCalivration] = useState({
       {readyAlert ? <Confirm content="준비 중입니다..." btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
       <div className="verify-measurement-page-nav">
         <div className='verify-measurement-page-backBtn' onClick={()=>{navigatorR(-1)}}>
-            <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+            <FaChevronLeft style={{color: "#4b75d6",}} />
         </div>
         <p>보정 검증</p>
       <div className='screenShot-btn' onClick={onCapture}><RxImage />Screenshot</div>

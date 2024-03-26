@@ -1,10 +1,3 @@
-import { useState, useRef, useEffect} from 'react';
-import axios from 'axios';
-
-import { Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 const SerialNumReset = (props) =>{
 
   const click = (e,num) =>{

@@ -1,18 +1,15 @@
 import { useState, useCallback, useEffect, useRef} from 'react';
 import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
 import { useInView } from 'react-intersection-observer';
-import Alert from "../components/Alerts.js"
 import { useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faSearch} from '@fortawesome/free-solid-svg-icons'
+import { FaChevronLeft, FaSearch } from "react-icons/fa";
+
 const MngClncs = () =>{
   let navigator = useNavigate();
 
   const [clinicians, setClinicians] = useState([]);
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
   const [loading, setLoading] = useState(false)
-  const [ref, inView] = useInView();
   const [page, setPage] = useState(1); // 현재 페이지 번호 (페이지네이션)
   const [searchVal, setSearchVal] = useState("")
 
@@ -77,14 +74,14 @@ const MngClncs = () =>{
       </div> */}
       <div className="manage-clinics-nav" onClick={()=>{console.log()}}>
         <div className='manage-clinics-backBtn' onClick={()=>{navigator(-1)}}>
-          <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+          <FaChevronLeft style={{color: "#4b75d6",}}/>
         </div>
         <p onClick={()=>{console.log(cliniciansMngRef.current[0].children[0])}} >의료진 관리</p>
       </div>
       <div className="manage-clinics-body-container">
         <div>의료진 검색</div>
         <div className="search-patient-container">
-          <FontAwesomeIcon className='searchIcon' icon={faSearch} style={{color: "#4b75d6",}} />
+          <FaSearch className='searchIcon' style={{color: "#4b75d6",}}/>
           <form 
               onSubmit={(e)=>{
               e.preventDefault(); // 전체 리렌더링 방지

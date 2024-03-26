@@ -1,14 +1,7 @@
 import { useEffect, useState, useRef} from "react";
-import axios from "axios";
 import { useLocation,useNavigate } from 'react-router-dom';
 import {
-    Chart as ChartJS,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Tooltip,
-    Legend,
+    Chart as ChartJS,LinearScale,PointElement,LineElement,BarElement,Tooltip,Legend
   } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';

@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from "react-router-dom";
-import { Cookies } from 'react-cookie';
 import axios from 'axios';
 import { Provider } from "react-redux";
 import deviceInfo from "./deviceInfo.js"

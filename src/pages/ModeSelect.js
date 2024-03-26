@@ -1,9 +1,4 @@
-import { useState, useRef, useEffect} from 'react';
-import axios from 'axios';
-import { Cookies, useCookies } from 'react-cookie';
-import Alert from "../components/Alerts.js"
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
-import { GrView } from "react-icons/gr";
+import { useNavigate } from 'react-router-dom'
 
 const ModeSelect = () =>{
   let navigate = useNavigate();

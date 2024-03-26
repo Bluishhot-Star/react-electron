@@ -701,6 +701,7 @@ text-align: right;
 
 .detail-page-container .left-container{
   width: 100%;
+  height: 100%;
   display: grid;
   grid-template-rows: 1fr 1fr;
 }
@@ -967,7 +968,7 @@ text-align: right;
 
 
 .detail-page-container .right-container{
-  width: 100%;
+  width: 100%;height: 100%;
   position: relative;
 }
 .detail-page-container .prePost-container{
@@ -1966,10 +1967,14 @@ text-align: right;
 }
 .dateSelector-logo{
   position: absolute;
-  top: 0;
-  font-size: 1.2rem;
+  top: 20px;
+  left: 20px;
+  width: 35%;
   color: #018abe;
   font-weight: bold;
+}
+.dateSelector-logo img{
+  width: 100%;
 }
 .dateInput-container{
   width: 100%;
@@ -2017,6 +2022,7 @@ text-align: right;
   right: 5px;
   top: 5px;
   cursor: pointer;
+  color: rgba(1, 136, 190, 1);
 }
 .date-resetBtn:active{
   opacity: 0.3;
@@ -2196,7 +2202,7 @@ text-align: right;
 }
 .admin-chevronDown{
   position: absolute;
-  right: 10%;
+  right: 10px;
   top: 50%;
   transform: translate(0, -50%);
   font-size: 2vh;

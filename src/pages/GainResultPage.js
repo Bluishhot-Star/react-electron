@@ -1,11 +1,7 @@
 import { useState, useRef, useEffect} from 'react';
-import axios from 'axios';
-import Alert from "../components/Alerts.js"
-import { Routes, Route, Link,useNavigate,useLocation } from 'react-router-dom'
-import {} from "@fortawesome/fontawesome-svg-core"
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import { debounce, values } from 'lodash'
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate,useLocation } from 'react-router-dom'
+import { debounce } from 'lodash'
+import { FaChevronLeft } from "react-icons/fa";
 import { RxImage } from "react-icons/rx";
 import {registerables,Chart as ChartJS,RadialLinearScale,LineElement,Tooltip,Legend,} from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
@@ -369,7 +365,7 @@ const GainResultPage = () =>{
     <div ref={rootRef} className="gain-page-container">
       <div className="gain-page-nav">
         <div className='gain-page-backBtn' onClick={()=>{navigatorR(-1)}}>
-            <FontAwesomeIcon icon={faChevronLeft} style={{color: "#4b75d6",}} />
+            <FaChevronLeft style={{color: "#4b75d6",}}/>
         </div>
         <p>보정 결과</p>
         <div className='screenShot-btn' onClick={onCapture}><RxImage />Screenshot</div>
