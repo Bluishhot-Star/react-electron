@@ -17,7 +17,11 @@ import Timer from "../components/Timer.js"
 import VolumeBar from "../components/VolumeBar.js"
 import Alert from "../components/Alerts.js"
 
-
+var maxY = 2;
+var minY = -1;
+var maxX = 6;
+var volumFlowMin = -1;
+var volumFlowMaxX = 6;
 //FVC 검사 페이지
 const MeasurementPage = () =>{
   const location = useLocation();
@@ -133,9 +137,75 @@ const MeasurementPage = () =>{
         graphOption.scales.x.max = parseInt(Math.max(...timeVolumeMaxList));
         setTrigger(0);
       }
+      
     }
   },[totalData])
-
+  //차트 비율
+  const chartRatio=(trials,ver)=>{
+    if(trials){
+      // fvc volumFlowList min
+      const minYArray = [];
+      const maxXArray = [];
+      var volumFlowListMin;
+      var volumFlowListMaxX;
+      trials.map((item,idx)=>{
+        //y축
+        if(ver == 1){
+          volumFlowListMin = item.graph.volumeFlow.map((item)=>{
+            return item.y;
+          });
+          //x축
+          volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
+            return item.x;
+          });
+        }else{
+          volumFlowListMin = item.map((item)=>{
+            return item.y;
+          });
+          //x축
+          volumFlowListMaxX = item.map((item)=>{
+            return item.x;
+          });
+        }
+        
+        //각각의 y축 최소값
+        var min = Math.floor((Math.min(...volumFlowListMin)))
+        if(min < -4){
+          min -= 2;
+        }
+        minYArray.push(min);
+        //각각의 x축 최대값
+        maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
+      })
+      //y축 최소값
+      minY = Math.min.apply(null,minYArray);
+      
+      //y축 최대값
+      
+      maxY = Math.abs(minY) * 2;
+      //x축 최대값
+      maxX = maxY+Math.abs(minY);
+      
+      //계산한 x축 보다 실제 x축이 더 클 경우
+      if(maxX < Math.max.apply(null,maxXArray)){
+        maxX = Math.max.apply(null,maxXArray);
+        if(maxX % 2 != 0){
+          maxX -= 1;
+        }
+        minY = -maxX/3*2;
+        //소수점이 0.7이라면
+        if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
+          minY -= 0.1;
+        }
+        maxY = Math.abs(minY*2);
+        
+      }
+      if(minY % 2 !=0 && minY <= -2){
+        minY -= 1;
+      }
+      
+    }
+  }
   //그래프 선택
   const selectGraph=(index)=>{
     if(meaStart){return;}
@@ -173,6 +243,9 @@ const MeasurementPage = () =>{
       setGraphOnOff(temp);
       setTimeVolume([]);
       setVolumeFlow([]);
+      maxY = 2;
+      minY = -1;
+      maxX = 6;
       return;
     }
     // 누른거 있을때
@@ -191,7 +264,7 @@ const MeasurementPage = () =>{
     setTimeVolume(temp);
     setVolumeFlow(temp2);
     console.log(temp);
-
+    chartRatio(temp2,0)
   },[trigger])
 
 
@@ -248,6 +321,7 @@ useEffect(()=>
     let time2 = setTimeout(() => {
       let dataset = []
       volumeFlow.forEach((item,index)=>{
+        
         dataset.push(
           {
             label: "",
@@ -849,6 +923,11 @@ useEffect(()=>{
 //-----------------------------------------------------------------------------------------------
   // 시작 확인 시 flag 세우기 -> 처리할 데이터 슬라이싱
   useEffect(()=>{
+    maxY = 2;
+    minY = -1;
+    maxX = 6;
+    volumFlowMin = 0;
+    volumFlowMaxX = 0;
     if(meaStart){
       let temp = dataList.length;
       let time = setTimeout(() => {
@@ -1024,6 +1103,60 @@ useEffect(()=>{
           }
         }
       }
+      // fvc volumFlowList min
+
+      //y축
+      
+
+      if(volumFlowMin > rawF){
+        console.log("rawF : "+rawF)
+        volumFlowMin = rawF;
+        //각각의 y축 최소값
+        if(volumFlowMin < -4){
+          volumFlowMin -= 2;
+          
+        }
+      }else if(volumFlowMin > Math.floor(-rawF / 2) && rawF > 0){
+        volumFlowMin = Math.floor(-rawF / 2);
+        //각각의 y축 최소값
+        if(volumFlowMin < -4){
+          volumFlowMin -= 2;
+          
+        }
+      }
+      //x축
+      if(volumFlowMaxX < x){
+        volumFlowMaxX  = x;
+      }
+
+
+      //y축 최소값
+      minY = volumFlowMin;
+      
+      //y축 최대값
+      maxY = Math.abs(minY) * 2;
+
+      //x축 최대값
+      maxX = maxY+Math.abs(minY);
+      
+      //계산한 x축 보다 실제 x축이 더 클 경우
+      if(maxX <volumFlowMaxX){
+        maxX = volumFlowMaxX;
+        if(maxX % 2 != 0){
+          maxX -= 1;
+        }
+        minY = -maxX/3*2;
+        //소수점이 0.7이라면
+        if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
+          minY -= 0.1;
+        }
+        maxY = Math.abs(minY*2);
+        
+      }
+      if(minY % 2 !=0 && minY <= -2){
+        minY -= 1;
+      }
+
       volumeFlowList.push({x: x, y:rawF});
       setVolumeFlowList(volumeFlowList);
     }
@@ -1170,7 +1303,6 @@ useEffect(()=>{
       resizeDelay:0,
       datalabels: false,
     },
-    aspectRatio: 0.6,
     responsive: true,
     animation:{
       duration:0
@@ -1182,18 +1314,21 @@ useEffect(()=>{
         radius: 0,
       },
     },
-    scales: {
+    scales: { 
       x: {
         axios: 'x',
-        // min: 0,
-        // max: 5,
-        // suggestedMax: 6.0,
+        min: 0,
+        suggestedMax:()=>{
+          if(maxX > 6){
+            return maxX;
+          }
+          return 6;
+        },
+        // max: parseInt(Math.max(...tvMax)),
         ticks:{
           autoSkip: false,
-          // stepSize : 0.1,
-          // precision : 0.1,
           beginAtZero: false,
-          max: 12.0,
+          
         },
         grid:{
           color: function(context) {
@@ -1211,19 +1346,33 @@ useEffect(()=>{
           zeroLineColor:'rgb(0, 0, 255)',
         },
         axios: 'y',
-        // min: -9,
-        suggestedMax: 0.6,
-        suggestedMin: -0.4,
+        max:()=>{
+          if(maxY > 2){
+            return maxY;
+          }
+          return 2;
+        },
+        min:()=>{
+          if(minY < -1){
+            return minY;
+          }
+          return -1;
+        },
         grace:"5%",
+        
         ticks: {
-          autoSkip: false,
-
+          precision:10,
           major: true,
           beginAtZero: true,
-          stepSize : 0.2,
+          stepSize:(context)=>{
+            if(context.scale.min === -1){
+              return 0.5;
+            }
+            return 1;
+          },
           fontSize : 10,
           textStrokeColor: 10,
-          precision: 0,
+          precision: 1,
         },
         grid:{
           color: function(context) {
@@ -1912,6 +2061,11 @@ useEffect(()=>{
             <div ref={firstBtnRef} onClick={()=>{
               if(!(firstBtnRef.current.classList.contains("disabled"))){
                 resetGraph()
+                maxY = 2;
+                minY = -1;
+                maxX = 6;
+                volumFlowMin = 0;
+                volumFlowMaxX = 0;
               }
             }}> <RiLungsLine className='lungIcon'/><p>재측정</p></div>
             <div ref={secondBtnRef} onClick={()=>{
@@ -1919,6 +2073,7 @@ useEffect(()=>{
                 if(!meaStart){
                   console.log(1)
                   startBtnClicked()
+
                 }
                 else{
                   console.log(2)
