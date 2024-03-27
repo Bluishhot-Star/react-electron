@@ -1,5 +1,3 @@
-import Confirm from "../components/Confirm.js"
-
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
@@ -90,18 +88,40 @@ useEffect(()=>{
       setTrigger(0);
 
 
+      chartRatio(trials,1)
+
+    }
+
+
+  },[totalData])
+
+  const chartRatio=(trials,ver)=>{
+    if(trials){
       // fvc volumFlowList min
       const minYArray = [];
       const maxXArray = [];
+      var volumFlowListMin;
+      var volumFlowListMaxX;
       trials.map((item,idx)=>{
         //y축
-        const volumFlowListMin = item.graph.volumeFlow.map((item)=>{
-          return item.y;
-        });
-        //x축
-        const volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
-          return item.x;
-        });
+        if(ver == 1){
+          volumFlowListMin = item.graph.volumeFlow.map((item)=>{
+            return item.y;
+          });
+          //x축
+          volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
+            return item.x;
+          });
+        }else{
+          volumFlowListMin = item.map((item)=>{
+            return item.y;
+          });
+          //x축
+          volumFlowListMaxX = item.map((item)=>{
+            return item.x;
+          });
+        }
+        
         //각각의 y축 최소값
         var min = Math.floor((Math.min(...volumFlowListMin)))
         if(min < -4){
@@ -136,13 +156,8 @@ useEffect(()=>{
       if(minY % 2 !=0 && minY <= -2){
         minY -= 1;
       }
-
     }
-
-
-  },[totalData])
-
-
+  }
   
   const updateData = ()=>{
     let patientDate = location.state;
@@ -223,6 +238,8 @@ useEffect(()=>{
       setGraphOnOff(temp);
       setTimeVolume(allTimeVolumeList);
       setVolumeFlow(allVolumeFlowList);
+      chartRatio(allVolumeFlowList,0);
+
       return;
     }
     // 누른거 있을때
@@ -237,10 +254,11 @@ useEffect(()=>{
         temp[index] = allTimeVolumeList[index];
         temp2[index] = allVolumeFlowList[index];
       }
+      
     })
     setTimeVolume(temp);
     setVolumeFlow(temp2);
-
+    chartRatio(temp2,0);
   },[trigger])
   
   useEffect(()=>{
@@ -947,7 +965,7 @@ useEffect(()=>{
     }
   },[goTO])
 
-  const deleteResult = async(id,date)=>{
+  const simpleResult = async(id,date)=>{
     await axios.delete(`/measurements/${id}` , {
       headers: {
         Authorization: `Bearer ${accessToken}`
@@ -999,24 +1017,10 @@ useEffect(()=>{
     }
   },[totalData, FvcSvc])
   
-  const [deleteAlertStat, setDeleteAlertStat] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState("");
-  let deleteConfirmFunc = (val)=>{
-    if(val=="confirm"){
-      console.log(deleteTarget);
-      deleteResult(deleteTarget.id, deleteTarget.date);
-      setDeleteAlertStat(false);
-    }
-    else if(val=="cancel"){
-      setDeleteAlertStat(false);
-    }
-  }
-
-
   return( 
     
     <div className="result-page-container">
-      {deleteAlertStat ? <Confirm content={"선택하신 검사를 삭제하시겠습니까?"} btn={true} onOff={setDeleteAlertStat} select={deleteConfirmFunc}/> : null}
+
       {dateSelectorStat ? <DateSelector data={inspectionDate} onOff={setDateSelectorStat} select={dateSelect}/> : null}
         <div className="nav">
           <div className="nav-logo">
@@ -1186,7 +1190,7 @@ useEffect(()=>{
                 totalData.fvc.trials.map((item, index)=>(
                   <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
-                      <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={async(e)=>{e.stopPropagation(); setDeleteTarget({id:item.measurementId, date:item.date}); setDeleteAlertStat(true);}}/>
+                      <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
                       <div className='simple-result-title-date'>
                         <div className='simple-result-title'>{item.bronchodilator}</div>
                         <div className='simple-result-date'>({item.date})</div>
@@ -1240,7 +1244,7 @@ useEffect(()=>{
                 totalData.svc.trials.map((item, index)=>(
                   <div ref={(el)=>{svcSimpleResultsRef.current[index]=el}} onClick={()=>{selectSvcGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
-                      <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); setDeleteTarget({id:item.measurementId, date:item.date}); setDeleteAlertStat(true); }}/>
+                      <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
                       <div className='simple-result-title-date'>
                         <div className='simple-result-title'>{item.bronchodilator}</div>
                         <div className='simple-result-date'>({item.date})</div>
