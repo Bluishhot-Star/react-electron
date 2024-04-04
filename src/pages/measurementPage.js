@@ -568,7 +568,7 @@ useEffect(()=>
   }
 
 
-  class DataCalculateStrategyE {j
+  class DataCalculateStrategyE {
     constructor() {
       this.FREQUENCY = 80_000_000; // 80MHz
       this.LIMIT_DATA = 100_000_000;
@@ -2052,7 +2052,11 @@ useEffect(()=>{
             </div>
             <div className='volume-bar'>
               <div>
-                {calibratedLps ? <VolumeBar width={calibratedLps/3*100}/> : <VolumeBar width={0}/>}
+                {
+                  meaStart ? 
+                    calibratedLps ? <VolumeBar width={calibratedLps/3*100}/> : <VolumeBar width={0}/>
+                    : <VolumeBar width={0}/>
+                }
               </div>
             </div>
           </div>
@@ -2090,61 +2094,61 @@ useEffect(()=>{
           </div>
 
           <div className="history-container">
-            <div className="slider">
-              {
-              totalData == " " || totalData == "Empty resource" || !totalData ? null :
-                totalData.trials.map((item, index)=>(
-                  <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{console.log(simpleResultsRef.current[index]);console.log(item.measurementId);selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
-                  <div className='simple-result-title-container'>
-                  <FaSquareXmark className='deleteIcon'  style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); if(!meaStart){simpleResult(item.measurementId, date);}}}/>
-                  <div className='simple-result-title-date'>
-                    <div className='simple-result-title'>{item.bronchodilator}</div>
-                    <div className='simple-result-date'>({item.date})</div>
+              <div className="slider">
+                {
+                totalData == " " || totalData == "Empty resource" || !totalData ? null :
+                  totalData.trials.map((item, index)=>(
+                    <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{console.log(simpleResultsRef.current[index]);console.log(item.measurementId);selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
+                    <div className='simple-result-title-container'>
+                    <FaSquareXmark className='deleteIcon'  style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); if(!meaStart){simpleResult(item.measurementId, date);}}}/>
+                    <div className='simple-result-title-date'>
+                      <div className='simple-result-title'>{item.bronchodilator}</div>
+                      <div className='simple-result-date'>({item.date})</div>
+                    </div>
+                      
+                    </div>
+                    <div className='simple-result-table-container'>
+                      <div className='simple-result-table-column'>
+                        <p></p>
+                        <p>meas</p>
+                        <p>pred</p>
+                        <p>percent</p>
+                      </div>
+                      <div className='simple-result-table-FVC'>
+                        <p>{item.results[0].title}({item.results[0].unit})</p>
+                        <p>{item.results[0].meas?item.results[0].meas:"-"}</p>
+                        <p>{item.results[0].pred?item.results[0].pred:"-"}</p>
+                        <p>{item.results[0].per?item.results[0].per:"-"}</p>
+                      </div>
+                      <div className='simple-result-table-FEV1'>
+                        <p>{item.results[22].title}({item.results[22].unit})</p>
+                        <p>{item.results[22].meas?item.results[22].meas:"-"}</p>
+                        <p>{item.results[22].pred?item.results[22].pred:"-"}</p>
+                        <p>{item.results[22].per?item.results[22].per:"-"}</p>
+                      </div>
+                      <div className='simple-result-table-FEV1'>
+                        <p>{item.results[1].title}({item.results[1].unit})</p>
+                        <p>{item.results[1].meas?item.results[1].meas:"-"}</p>
+                        <p>{item.results[1].pred?item.results[1].pred:"-"}</p>
+                        <p>{item.results[1].per?item.results[1].per:"-"}</p>
+                      </div>
+                      <div className='simple-result-table-FEV1per'>
+                        <p>FEV1%</p>
+                        <p>{item.results[2].meas?item.results[2].meas:"-"}</p>
+                        <p>{item.results[2].pred?item.results[2].pred:"-"}</p>
+                        <p>{item.results[2].per?item.results[2].per:"-"}</p>
+                      </div>
+                      <div className='simple-result-table-PEF'>
+                        <p>PEF(L/s)</p>
+                        <p>{item.results[3].meas?item.results[3].meas:"-"}</p>
+                        <p>{item.results[3].pred?item.results[3].pred:"-"}</p>
+                        <p>{item.results[3].per?item.results[3].per:"-"}</p>
+                      </div>
+                    </div>
                   </div>
-                    
-                  </div>
-                  <div className='simple-result-table-container'>
-                    <div className='simple-result-table-column'>
-                      <p></p>
-                      <p>meas</p>
-                      <p>pred</p>
-                      <p>percent</p>
-                    </div>
-                    <div className='simple-result-table-FVC'>
-                      <p>{item.results[0].title}({item.results[0].unit})</p>
-                      <p>{item.results[0].meas?item.results[0].meas:"-"}</p>
-                      <p>{item.results[0].pred?item.results[0].pred:"-"}</p>
-                      <p>{item.results[0].per?item.results[0].per:"-"}</p>
-                    </div>
-                    <div className='simple-result-table-FEV1'>
-                      <p>{item.results[22].title}({item.results[22].unit})</p>
-                      <p>{item.results[22].meas?item.results[22].meas:"-"}</p>
-                      <p>{item.results[22].pred?item.results[22].pred:"-"}</p>
-                      <p>{item.results[22].per?item.results[22].per:"-"}</p>
-                    </div>
-                    <div className='simple-result-table-FEV1'>
-                      <p>{item.results[1].title}({item.results[1].unit})</p>
-                      <p>{item.results[1].meas?item.results[1].meas:"-"}</p>
-                      <p>{item.results[1].pred?item.results[1].pred:"-"}</p>
-                      <p>{item.results[1].per?item.results[1].per:"-"}</p>
-                    </div>
-                    <div className='simple-result-table-FEV1per'>
-                      <p>FEV1%</p>
-                      <p>{item.results[2].meas?item.results[2].meas:"-"}</p>
-                      <p>{item.results[2].pred?item.results[2].pred:"-"}</p>
-                      <p>{item.results[2].per?item.results[2].per:"-"}</p>
-                    </div>
-                    <div className='simple-result-table-PEF'>
-                      <p>PEF(L/s)</p>
-                      <p>{item.results[3].meas?item.results[3].meas:"-"}</p>
-                      <p>{item.results[3].pred?item.results[3].pred:"-"}</p>
-                      <p>{item.results[3].per?item.results[3].per:"-"}</p>
-                    </div>
-                  </div>
-                </div>
-                  ))
-              }
-            </div>
+                    ))
+                }
+              </div>
           </div>
         </div>
       </div>

@@ -488,30 +488,26 @@
   border-radius: 7px;
   border: #ccc 1px solid;
   display: flex;
-  /* overflow: hidden; */
+  overflow: scroll;
   align-items: center;
   padding: 0 10px;
   background: #fff;
-  /* height: 80%; */
   position: relative;
 }
-.history-container .slider{
-  /* display:flex; */
-  /* width: calc(300px * 12); */
-  /* align-items: center;
-  overflow-x: auto;
+.measurement-slider-container{
+  transform: rotate(-90deg);
+  transform-origin: top left;
+  overflow-y: scroll;
+  overflow-x: hidden;
   position: absolute;
-  background: #fff;
-  
-  
-  max-height: 10vw;
-  margin:0;
-  overflow-y:auto;
-  overflow-x:hidden;
-  transform:rotate(-90deg);
-  top: 0;
-  left: 0; */
-  /* transform-origin:top; */
+  width: 100%;
+  height: 100%;
+}
+.measurement-slider-container .slider{
+  transform: rotate(90deg);
+  transform-origin: top left;
+}
+.history-container .slider{
   position:absolute;
   display: grid;
   grid-gap: 10px;
@@ -525,6 +521,7 @@
   transform:rotate(-90deg) translateX(-32vh);
   transform-origin:left top;
 }
+
 .history-container.empty{
   background: #eee;
   border: 1px solid #efefef;
@@ -3685,7 +3682,7 @@ text-align: right;
 .measurement-page-right-container{
   width: 100%;
   display: grid;
-  grid-template-rows: 10fr 40px 8fr;
+  grid-template-rows: 10fr 40px 35vh;
 }
 .measurement-page-right-container .fvc-graph-container{
   border: 1px solid #ccc;
