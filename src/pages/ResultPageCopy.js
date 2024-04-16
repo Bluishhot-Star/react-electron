@@ -53,6 +53,15 @@ function ResultPageCopy(){
   const [allTimeVolumeList, setAllTimeVolumeList] = useState([]);
   const [allVolumeFlowList, setAllVolumeFlowList] = useState([]);
 useEffect(()=>{
+  if(state.fvc.length === 0){
+    state.fvc = "Empty resource"
+  }
+  if(state.svc.length === 0){
+    state.svc = "Empty resource"
+  }
+  if(state.info.length === 0){
+    state.info = "Empty resource"
+  }
   setTotalData(state);
 },[])
   //fvc 그래프 처리
