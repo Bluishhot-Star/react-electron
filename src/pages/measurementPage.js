@@ -412,7 +412,7 @@ useEffect(()=>
 
   // 노력성 호기 전 호흡 횟수 등 쿠키에서 받아오기
   const [breathCount,setBreathCount] = useState(3);
-  const [strongTime,setStrongTime] = useState(6);
+  const [strongTime,setStrongTime] = useState("6");
   const [stopTime,setStopTime] = useState(15);
   useEffect(()=>{
     console.log(window.api.get("get-cookies",'manageRate'));
@@ -422,6 +422,7 @@ useEffect(()=>
     }
     if(window.api.get("get-cookies",'manageTime') !== undefined){
       setStrongTime(window.api.get("get-cookies",'manageTime'));
+      console.log(typeof(window.api.get("get-cookies",'manageTime')))
     }
   },[]);
   // 검사 종료 여부
@@ -430,7 +431,7 @@ useEffect(()=>
 
   // 게이지 UI 전처리
   let setGaugeUI = (strongTime, stopTime)=>{
-    switch (strongTime) {
+    switch (parseInt(strongTime)) {
       case 3:
         itemRef.current[30].classList += " endColor";
         setTimerTick(100);
@@ -465,7 +466,7 @@ useEffect(()=>
 
   useEffect(()=>{
     setGaugeUI(strongTime, stopTime);
-  },[])
+  },[strongTime,stopTime])
   
    // 세션 가이드 컨텐츠
   const [gaugeContent, setGaugeContent] = useState(null)
