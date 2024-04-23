@@ -72,31 +72,43 @@ const ManagementSetting= () =>{
     }
     
     
-    
   },[])
+
+ 
+
 
   const timeF=(exhaleT,timerE)=>{
     setTime(exhaleT);
   }
   useEffect(()=>{
-
+    var data = '0';
     date.setFullYear(2100);
+    if(window.api.get("get-cookies",'manageTime') === undefined){
+      data = '6';
+    }else{
+      data = `${time}`;
+    }
     const manageTimeData = {
       name: 'manageTime',
-      data : `${time}`,
+      data : data,
       date : date
     }
     window.api.send("set-cookie", manageTimeData);
-    console.log(typeof(manageTimeData.data))
 
   },[time])
 
   useEffect(()=>{
     console.log(typeof(rate))
     date.setFullYear(2100);
+    var data = '0';
+    if(window.api.get("get-cookies",'manageRate') === undefined){
+      data = '3';
+    }else{
+      data = rate;
+    }
     const manageRateData = {
       name: 'manageRate',
-      data : rate,
+      data : data,
       date : date
     }
     window.api.send("set-cookie", manageRateData);

@@ -465,7 +465,15 @@ useEffect(()=>
   }
 
   useEffect(()=>{
-    setGaugeUI(strongTime, stopTime);
+    const strongT = strongTime;
+    const stopT = stopTime;
+    if(strongTime == undefined){
+      strongT = 3;
+    }
+    if(stopT == undefined){
+      stopT = 15;
+    }
+    setGaugeUI(strongT, stopT);
   },[strongTime,stopTime])
   
    // 세션 가이드 컨텐츠
