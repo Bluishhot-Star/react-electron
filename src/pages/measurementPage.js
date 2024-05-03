@@ -411,18 +411,21 @@ useEffect(()=>
 
 
   // 노력성 호기 전 호흡 횟수 등 쿠키에서 받아오기
-  const [breathCount,setBreathCount] = useState(3);
-  const [strongTime,setStrongTime] = useState("6");
-  const [stopTime,setStopTime] = useState(15);
+  const [breathCount,setBreathCount] = useState();
+  const [strongTime,setStrongTime] = useState();
+  const [stopTime,setStopTime] = useState();
   useEffect(()=>{
     console.log(window.api.get("get-cookies",'manageRate'));
     if(window.api.get("get-cookies",'manageRate') !==undefined){
       setBreathCount(window.api.get("get-cookies",'manageRate'));
-
+    }else{
+      setBreathCount("3");
     }
     if(window.api.get("get-cookies",'manageTime') !== undefined){
       setStrongTime(window.api.get("get-cookies",'manageTime'));
       console.log(typeof(window.api.get("get-cookies",'manageTime')))
+    }else{
+      setStrongTime("6");
     }
   },[]);
   // 검사 종료 여부
@@ -465,15 +468,18 @@ useEffect(()=>
   }
 
   useEffect(()=>{
-    const strongT = strongTime;
-    const stopT = stopTime;
-    if(strongTime == undefined){
-      strongT = 3;
+    if(strongTime){
+      setGaugeUI(strongTime, stopTime);
     }
-    if(stopT == undefined){
-      stopT = 15;
-    }
-    setGaugeUI(strongT, stopT);
+    // let strongT = strongTime;
+    // let stopT = stopTime;
+    // if(strongTime == undefined){
+    //   strongT = 3;
+    // }
+    // if(stopT == undefined){
+    //   stopT = 15;
+    // }
+    // setGaugeUI(strongT, stopT);
   },[strongTime,stopTime])
   
    // 세션 가이드 컨텐츠

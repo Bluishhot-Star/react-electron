@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation} from 'react-router-dom'
+import Confirm from "../components/Confirm.js"
 
 
 
@@ -181,20 +182,23 @@ const MemberListCopy = ()=>{
           console.log(err);
         });
     }
-    
-    
-    
-    
   },[page])
 
   useEffect(()=>{
     MemberListCopy()
   },[examinees])
+  useEffect(()=>{
+    if(!goToResult){
+      setGoToResult(true);
+    }
+  },[loading])
 
-  
+  // 다수 결과보기 링크 호출 방지
+  const [goToResult, setGoToResult] = useState(false)
 
   return (
       <div className="memberList-page-containerC">
+        {goToResult ? <Confirm content={"잠시만 기다려주세요."} btn={false} onOff={setGoToResult}/> : null}
         {dateSelectorStat ? <DateSelector data={inspectionDate} onOff={setDateSelectorStat} select={dateSelect}/> : null}
         <div className="memberList-page-navC">
           <p onClick={()=>{console.log(deviceInfo);
@@ -222,10 +226,13 @@ const MemberListCopy = ()=>{
                 // MemberListCopy();
                 setPage(0);
                 searchMemberList();
-                setLoading(true);
-                setTimeout(()=>{
-                  setLoading(false);
-                },1500)
+                // setLoading(true);
+                // setTimeout(()=>{
+                //   setLoading(false);
+                // },1000)
+                if(!goToResult){
+                  setGoToResult(true);
+                }
                 }}>
               <input type="text" placeholder={!loading ? '찾고자 하는 환자의 이름 또는 차트넘버를 입력해주세요.' : '로딩중'}
                 onChange={(e)=>{setSearchVal(e.target.value);}} disabled={loading}/>
@@ -256,8 +263,13 @@ const MemberListCopy = ()=>{
                       <div className="btn" onClick={(e)=>{
                           e.preventDefault();
                           console.log(e.target);
-                          console.log(item.chartNumber); 
-                          click(index,item.chartNumber,item.birthday);}}>
+                          console.log(item.chartNumber);
+                          if(!goToResult){
+                            setGoToResult(true);
+                            click(index,item.chartNumber,item.birthday);
+                          }
+                          
+                          }}>
                         <input type='button' id={"resultBtn" + index} className='resultBtn'/>
                         <label htmlFor='resultBtn'>결과보기</label>
                       </div>

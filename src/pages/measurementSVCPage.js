@@ -304,10 +304,13 @@ const MeasurementSVCPage = () =>{
   useEffect(()=>{
     if(window.api.get("get-cookies",'manageRate') !==undefined){
       setBreathCount(window.api.get("get-cookies",'manageRate'));
-
+    }else{
+      setBreathCount("3");
     }
     if(window.api.get("get-cookies",'manageTime') !== undefined){
       setStrongTime(window.api.get("get-cookies",'manageTime'));
+    }else{
+      setStrongTime("6");
     }
   },[]);
   
@@ -352,8 +355,10 @@ const MeasurementSVCPage = () =>{
   }
 
   useEffect(()=>{
-    setGaugeUI(strongTime, stopTime);
-  },[])
+    if(strongTime){
+      setGaugeUI(strongTime, stopTime);
+    }
+  },[strongTime,stopTime])
   
    // 세션 가이드 컨텐츠
   const [gaugeContent, setGaugeContent] = useState()
