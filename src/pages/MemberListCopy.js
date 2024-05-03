@@ -10,6 +10,8 @@ import { useInView } from 'react-intersection-observer';
 import { useSelector } from "react-redux"
 import { FaSearch } from "react-icons/fa";
 import { HiOutlineCog } from "react-icons/hi";
+let count = 0;
+let searchC = false;
 const MemberListCopy = ()=>{
   let deviceInfo = useSelector((state) => state.deviceInfo ) 
   const [examinees, setExaminees] = useState([]);
@@ -139,25 +141,57 @@ const MemberListCopy = ()=>{
 
   const [searchVal, setSearchVal] = useState("")
 
-  const MemberListCopy = useCallback(async () => {
-    setLoading(true)
-    axios.get(`/subjects?page=${page}&size=10&name=${searchVal}`,{
+  const searchMemberList = async ()=>{
+    console.log(searchVal)
+    axios.get(`/v3/subjects?page=1&size=500&search-option=name&search=${searchVal === undefined ? "" : searchVal}`,{
       headers: {
         Authorization: `Bearer ${accessToken}`
       }}).then((res)=>{
-        if(res.data.subCode !== 2004){
-          setExaminees([...examinees, ...res.data.response.subjects]);
-          setPage((page) => page + 1);
+        if(res.data.subCode === 2004 && count < 4){
+          count++;
+          searchMemberList();
+        }else{  
+          count = 0;
+            setExaminees(res.data.response);
+            if(res.data.response.length === 200){
+              setPage(2);
+
+            }
+          searchC = false
         }
+        console.log(res.data.response)
       }).catch((err)=>{
         console.log(err);
       });
-    setLoading(false)
-  },[page,searchVal])
+  }
+
+  const MemberListCopy = useCallback(async () => {
+    console.log(searchVal == '');
+    if(page != 0){
+      await axios.get(`/v3/subjects?page=${page}&size=500&search-option=name&search=${searchVal}`,{
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }}).then((res)=>{
+          if(res.data.subCode !== 2004){  
+            setExaminees([...examinees, ...res.data.response]);
+            setPage((page) => page + 1);
+          }
+          console.log(res.data.response)
+        }).catch((err)=>{
+          console.log(err);
+        });
+    }
+    
+    
+    
+    
+  },[page])
 
   useEffect(()=>{
     MemberListCopy()
   },[examinees])
+
+  
 
   return (
       <div className="memberList-page-containerC">
@@ -185,10 +219,16 @@ const MemberListCopy = ()=>{
                 onSubmit={(e)=>{
                 e.preventDefault(); // 전체 리렌더링 방지
                 setExaminees([]);
-                MemberListCopy();
-                setPage(1)}}>
-              <input type="text" placeholder='찾고자 하는 환자의 이름 또는 차트넘버를 입력해주세요.'
-                onChange={(e)=>{setSearchVal(e.target.value); }}/>
+                // MemberListCopy();
+                setPage(0);
+                searchMemberList();
+                setLoading(true);
+                setTimeout(()=>{
+                  setLoading(false);
+                },1500)
+                }}>
+              <input type="text" placeholder={!loading ? '찾고자 하는 환자의 이름 또는 차트넘버를 입력해주세요.' : '로딩중'}
+                onChange={(e)=>{setSearchVal(e.target.value);}} disabled={loading}/>
               </form>
             </div>
             <div className="patient-listC">
