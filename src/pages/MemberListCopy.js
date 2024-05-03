@@ -144,7 +144,7 @@ const MemberListCopy = ()=>{
 
   const searchMemberList = async ()=>{
     console.log(searchVal)
-    axios.get(`/v3/subjects?page=1&size=500&search-option=name&search=${searchVal === undefined ? "" : searchVal}`,{
+    axios.get(`/v3/subjects?page=1&size=500&search-option=search&search=${searchVal === undefined ? "" : searchVal}`,{
       headers: {
         Authorization: `Bearer ${accessToken}`
       }}).then((res)=>{
@@ -169,7 +169,7 @@ const MemberListCopy = ()=>{
   const MemberListCopy = useCallback(async () => {
     console.log(searchVal == '');
     if(page != 0){
-      await axios.get(`/v3/subjects?page=${page}&size=500&search-option=name&search=${searchVal}`,{
+      await axios.get(`/v3/subjects?page=${page}&size=500&search-option=search&search=${searchVal}`,{
         headers: {
           Authorization: `Bearer ${accessToken}`
         }}).then((res)=>{
