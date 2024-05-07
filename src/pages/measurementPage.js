@@ -1097,10 +1097,12 @@ useEffect(()=>{
             x = vTemp;
           }
         }
-        if(timerReady && timerStart && volumeFlowList[calFlag]["y"] <= 0 && !measureDone){
-          setFlagTo({...flagTo, to: flagTo.from+flag.rIdx-1});
-          setTimerStart(false);
-          setMeasureDone(true);
+        if(timerReady && timerStart && !measureDone){
+          if(volumeFlowList[calFlag]["y"] < 0){
+            setFlagTo({...flagTo, to: flagTo.from+flag.rIdx-1});
+            setTimerStart(false);
+            setMeasureDone(true);
+          }
         }
       }
       //호기 시
@@ -1111,7 +1113,7 @@ useEffect(()=>{
         }
         x = preXY['x'] + rawV;
         if(timerReady && timerStart && !measureDone){
-          if(rawF == 0 && runTime!=0){
+          if(rawF == 0 && runTime>30){
             setFlagTo({...flagTo, to: flagTo.from+flag.rIdx-1});
             setTimerStart(false);
             setMeasureDone(true);

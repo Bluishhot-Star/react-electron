@@ -74,7 +74,6 @@ const ManagementSetting= () =>{
     
   },[])
 
- 
 
 
   const timeF=(exhaleT,timerE)=>{
