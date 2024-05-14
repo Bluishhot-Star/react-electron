@@ -313,11 +313,7 @@ const MeasurementPage = () =>{
 // volumeFlow 그리기
 useEffect(()=>
 {
-  console.log("!#!##")
-
-  let time = setTimeout(()=>{
-    console.log("!#!##!@!@")
-    
+  let time = setTimeout(()=>{   
     let time2 = setTimeout(() => {
       let dataset = []
       volumeFlow.forEach((item,index)=>{
@@ -364,10 +360,8 @@ useEffect(()=>
   // timeVolume 그리기
   useEffect(()=>
   {
-    console.log("!#!##")
 
     let time = setTimeout(()=>{
-      console.log("!#!##!@!@")
       
       let time2 = setTimeout(() => {
         let dataset = []
@@ -1098,7 +1092,7 @@ useEffect(()=>{
           }
         }
         if(timerReady && timerStart && !measureDone){
-          if(volumeFlowList[calFlag]["y"] < 0){
+          if(volumeFlowList[calFlag] && volumeFlowList[calFlag]["y"] < 0){
             setFlagTo({...flagTo, to: flagTo.from+flag.rIdx-1});
             setTimerStart(false);
             setMeasureDone(true);
@@ -1197,17 +1191,21 @@ useEffect(()=>{
     }
     else{
       if (exhale !== calDataList[calFlag-1].exhale) prefix *= -1;
-      x = rawT+timeVolumeList[calFlagTV-1].x;
-      y = timeVolumeList[calFlagTV-1].y + (prefix * rawV)
+      if(timeVolumeList[calFlagTV-1]){
+        x = rawT+timeVolumeList[calFlagTV-1].x;
+        y = timeVolumeList[calFlagTV-1].y + (prefix * rawV)
+      }
     }
-    if(volumeFlowList[volumeFlowList.length-1].y < 0){
-      setTimeVolumeList([]);
-      setCalFlagTV(0);
-    }else{
-      timeVolumeList.push({x:x, y:y});
-
-      setTimeVolumeList(timeVolumeList);
-      setCalFlagTV(calFlagTV+1);
+    if(volumeFlowList[volumeFlowList.length-1]){
+      if(volumeFlowList[volumeFlowList.length-1].y < 0){
+        setTimeVolumeList([]);
+        setCalFlagTV(0);
+      }else{
+        timeVolumeList.push({x:x, y:y});
+  
+        setTimeVolumeList(timeVolumeList);
+        setCalFlagTV(calFlagTV+1);
+      }
     }
   }
 
@@ -1251,29 +1249,31 @@ useEffect(()=>{
   }
   
   // rawData 문자열
-  let [result, setResult] = useState();
+  // let [result, setResult] = useState();
   //데이터 문자로 바꾸기
-  let arrayToString = (temp)=>{
-    let buffer = temp.buffer;
-    let rawData = String.fromCharCode.apply(null, Array.from(new Uint8Array(buffer))).trim()
-    dataList.push(rawData);
+
+
+  // let rawData;
+
+  let arrayToString = async(temp)=>{
+    // let buffer = temp.buffer;
+    // rawData = String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
+    dataList.push(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim());
     setDataList([...dataList]);
-    return String.fromCharCode.apply(null, Array.from(new Uint8Array(buffer))).trim()
+    // return String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
   }
-  //데이터 핸들링
-  let deviceDataHandling = (arr)=>{
-    let tempArr = [];
-    arr.forEach((item)=>{
-        tempArr.push(arrayToString(item))                                                                                                                                                                                                       
-    })
-    setResult(tempArr.join(' '));
-  }
+  // //데이터 핸들링
+  // let deviceDataHandling = (arr)=>{
+  //   let tempArr = [];
+  //   arr.forEach((item)=>{
+  //       tempArr.push(arrayToString(item))                                                                                                                                                                                                       
+  //   })
+  //   setResult(tempArr.join(' '));
+  // }
   // 데이터 출력
   function handleCharacteristicValueChanged(event) {
-    const value = event.target.value;
     // 데이터 처리 및 UART 프로토콜 해석
-
-    arrayToString(value)
+    arrayToString(event.target.value)
   }
 
 
