@@ -7,6 +7,7 @@ import {registerables,Chart as ChartJS,RadialLinearScale,LineElement,Tooltip,Leg
 import { Scatter } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import html2canvas from "html2canvas";
+import Confirm from "../components/Confirm.js"
 const GainResultPage = () =>{
   ChartJS.register(RadialLinearScale, LineElement, Tooltip, Legend, ...registerables,annotationPlugin);
   const location = useLocation();
@@ -19,6 +20,7 @@ const GainResultPage = () =>{
   let navigatorR = useNavigate();
   const state = location.state;
   let graphConRef = useRef();
+  const [capture, setCapture] = useState(false)
   
   useEffect(()=>{
     console.log(state.result.graph.volumeFlow);
@@ -321,26 +323,26 @@ const GainResultPage = () =>{
   },[graphData])
 
   //capture
-  const onCapture = () =>{
-    console.log("onCapture");
+  useEffect(()=>{
+    if(capture){
+      setCapture(false);
+      html2canvas(document.body).then((canvas)=>{
+        let now = new Date();
+        const month = now.getMonth()+1 < 10 ? "0"+(now.getMonth()+1) : now.getMonth()+1;
+        const date = now.getDate() < 10 ? "0"+now.getDate() : now.getDate();
+        const YMD = now.getFullYear()+""+month+""+date;
+        const hour = now.getHours() < 10 ? "0"+now.getHours() : now.getHours();
+        const minutes= now.getMinutes() < 10 ? "0"+now.getMinutes() : now.getMinutes();
+        const seconds = now.getSeconds() < 10 ? "0"+now.getSeconds() : now.getSeconds();
+        const time = hour+""+minutes+""+seconds;
+        console.log(month)
+        console.log(date+"_"+time)
+        onSaveAs(canvas.toDataURL('image/jpeg'),`car_result_${YMD}_${time}.jpeg`); 
+      });
+    }
+  },[capture])
 
-    html2canvas(document.body).then((canvas)=>{
-      let now = new Date();
-      const month = now.getMonth()+1 < 10 ? "0"+(now.getMonth()+1) : now.getMonth()+1;
-      const date = now.getDate() < 10 ? "0"+now.getDate() : now.getDate();
-      const YMD = now.getFullYear()+""+month+""+date;
-      const hour = now.getHours() < 10 ? "0"+now.getHours() : now.getHours();
-      const minutes= now.getMinutes() < 10 ? "0"+now.getMinutes() : now.getMinutes();
-      const seconds = now.getSeconds() < 10 ? "0"+now.getSeconds() : now.getSeconds();
-      const time = hour+""+minutes+""+seconds;
-      console.log(month)
-      console.log(date+"_"+time)
-      onSaveAs(canvas.toDataURL('image/jpeg'),`car_result_${YMD}_${time}.jpeg`);
-        
-    });
 
-    
-  };
   const onSaveAs = (uri,filename)=>{
     console.log("onSaveAs");
     var link = document.createElement('a');
@@ -349,7 +351,7 @@ const GainResultPage = () =>{
     link.download = filename;
     link.click();
     document.body.removeChild(link);
-
+    setCapture(false)
   };
   const rootRef = useRef(null);
   const [grayBg, setGrayBg] = useState("");
@@ -361,14 +363,27 @@ const GainResultPage = () =>{
       setGrayBg("loadingBG");
     }
   },[temp])
+
+
+    //캡쳐 로딩
+    const [goToResult, setGoToResult] = useState(false)
+    useEffect(()=>{
+      if(!goToResult && capture === true){
+        setGoToResult(true);
+      }
+    },[capture])
+
   return(
     <div ref={rootRef} className="gain-page-container">
+      {goToResult ? <Confirm content={"잠시만 기다려주세요."} btn={false} onOff={setGoToResult}/> : null}
       <div className="gain-page-nav">
         <div className='gain-page-backBtn' onClick={()=>{navigatorR(-1)}}>
             <FaChevronLeft style={{color: "#4b75d6",}}/>
         </div>
         <p>보정 결과</p>
-        <div className='screenShot-btn' onClick={onCapture}><RxImage />Screenshot</div>
+        <div className='screenShot-btn' onClick={()=>{
+          setCapture(true);
+          }}><RxImage />Screenshot</div>
       </div>
       <div className='gain-page-left-right-container'>
         <div className={"gain-page-left-container "+grayBg} ref={graphConRef}>

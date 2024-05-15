@@ -18,6 +18,7 @@ const VerificationPage = () =>{
   ChartJS.register(RadialLinearScale, LineElement, Tooltip, Legend, ...registerables,annotationPlugin);
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
   const [serialNum, setSerialNum] = useState(window.api.get("get-cookies",'serialNum'));
+  const [capture, setCapture] = useState(false)
   const location = useLocation();
   const chartRef = useRef();
   let firstBtnRef = useRef();
@@ -1248,22 +1249,30 @@ const [calivration,setCalivration] = useState({
   const onCapture = () =>{
     
     console.log("onCapture");
-    html2canvas(document.body).then((canvas)=>{
-      let now = new Date();
-      const month = now.getMonth()+1 < 10 ? "0"+(now.getMonth()+1) : now.getMonth()+1;
-      const date = now.getDate() < 10 ? "0"+now.getDate() : now.getDate();
-      const YMD = now.getFullYear()+""+month+""+date;
-      const hour = now.getHours() < 10 ? "0"+now.getHours() : now.getHours();
-      const minutes= now.getMinutes() < 10 ? "0"+now.getMinutes() : now.getMinutes();
-      const seconds = now.getSeconds() < 10 ? "0"+now.getSeconds() : now.getSeconds();
-      const time = hour+""+minutes+""+seconds;
-      console.log(month)
-      console.log(date+"_"+time)
-      onSaveAs(canvas.toDataURL('image/jpeg'),`car_verify_${YMD}_${time}.jpeg`);
-        
-    });
+    
     
   };
+
+  useEffect(()=>{
+    if(capture){
+      setCapture(false);
+      html2canvas(document.body).then((canvas)=>{
+        let now = new Date();
+        const month = now.getMonth()+1 < 10 ? "0"+(now.getMonth()+1) : now.getMonth()+1;
+        const date = now.getDate() < 10 ? "0"+now.getDate() : now.getDate();
+        const YMD = now.getFullYear()+""+month+""+date;
+        const hour = now.getHours() < 10 ? "0"+now.getHours() : now.getHours();
+        const minutes= now.getMinutes() < 10 ? "0"+now.getMinutes() : now.getMinutes();
+        const seconds = now.getSeconds() < 10 ? "0"+now.getSeconds() : now.getSeconds();
+        const time = hour+""+minutes+""+seconds;
+        console.log(month)
+        console.log(date+"_"+time)
+        onSaveAs(canvas.toDataURL('image/jpeg'),`car_verify_${YMD}_${time}.jpeg`);
+          
+      });
+    }
+  },[capture])
+
   const onSaveAs = (uri,filename)=>{
     console.log("onSaveAs");
     var link = document.createElement('a');
@@ -1284,9 +1293,19 @@ const [calivration,setCalivration] = useState({
       setGrayBg("loadingBG");
     }
   },[temp])
+
+    //캡쳐 로딩
+    const [goToResult, setGoToResult] = useState(false)
+    useEffect(()=>{
+      if(!goToResult && capture === true){
+        setGoToResult(true);
+      }
+    },[capture])
+
   return(
     <>
     <div ref={rootRef} className="verify-measurement-page-container">
+      {goToResult ? <Confirm content={"잠시만 기다려주세요."} btn={false} onOff={setGoToResult}/> : null}
       {disconnectStat&&confirm ? <Confirm content={"연결된 Spirokit기기가 없습니다.\n설정 페이지로 이동해서 Spirokit을 연결해주세요."} btn={true} onOff={setDisconnectStat} select={disconnectConfirmFunc}/> : null}
       {readyAlert ? <Confirm content="준비 중입니다..." btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
       <div className="verify-measurement-page-nav">
@@ -1294,7 +1313,9 @@ const [calivration,setCalivration] = useState({
             <FaChevronLeft style={{color: "#4b75d6",}} />
         </div>
         <p>보정 검증</p>
-      <div className='screenShot-btn' onClick={onCapture}><RxImage />Screenshot</div>
+        <div className='screenShot-btn' onClick={()=>{
+          setCapture(true);
+          }}><RxImage />Screenshot</div>
       </div>
       <div className='verify-measurement-m-page-container'>
         <div className="verify-measurement-page-left-container" ref={graphConRef}>
