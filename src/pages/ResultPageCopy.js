@@ -16,6 +16,7 @@ import { HiOutlineCog } from "react-icons/hi";
 import { BiSolidFileJpg } from "react-icons/bi";
 import ReportFvc from './ReportFvc.js';
 import ReportSvc from './ReportSvc.js';
+import Confirm from "../components/Confirm.js"
 var maxY = 0;
 var minY = 0;
 var maxX = 0;
@@ -28,6 +29,7 @@ function ResultPageCopy(){
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
   const [FvcSvc, setFvcSvc] = useState("fvc"); //fvc, svc
   const [tvMax, setTvMax] = useState([10]);
+  
   const [totalData,setTotalData] = useState({
     info:"Empty resource",
     fvc:"Empty resource",
@@ -1025,11 +1027,21 @@ useEffect(()=>{
       })
     }
   },[totalData, FvcSvc])
+
+  //결과 다운로드 로딩
+  const [goToResult, setGoToResult] = useState(false)
+
+  useEffect(()=>{
+    if(!goToResult && viewer === true){
+      setGoToResult(true);
+    }
+  },[viewer])
+
   
   return( 
     
     <div className="result-page-container">
-
+      {goToResult ? <Confirm content={"잠시만 기다려주세요."} btn={false} onOff={setGoToResult}/> : null}
       {dateSelectorStat ? <DateSelector data={inspectionDate} onOff={setDateSelectorStat} select={dateSelect}/> : null}
         <div className="nav">
           <div className="nav-logo">
@@ -1132,7 +1144,8 @@ useEffect(()=>{
                     ""
                   :
                     <div onClick={()=>{
-                      setViewer(!viewer)
+                      setViewer(true)
+                      setGoToResult(true)
                       // navigator('./reportFvc', {state :{data: rep}})
                     }}><BiSolidFileJpg className='jpgIcon'/>다운로드</div>
                 :
@@ -1140,7 +1153,8 @@ useEffect(()=>{
                     ""
                   :  
                     <div onClick={()=>{
-                      setViewer(!viewer)
+                      setViewer(true)
+                      setGoToResult(true)
                       // navigator('./reportSvc', {state :{data: rep}})
                     }}><BiSolidFileJpg className='jpgIcon'/>다운로드</div>
               }
