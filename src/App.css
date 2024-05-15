@@ -1002,7 +1002,7 @@ text-align: right;
   height: 100%;
   /* position: absolute;
   margin-top: 5vh; */
-  overflow: hidden;
+  overflow: auto;
   scrollbar-width: none;
   background: #fff;
 }
