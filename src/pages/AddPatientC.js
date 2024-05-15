@@ -45,6 +45,7 @@ const AddPatientCopy = ()=>{
   const [patch,setPatch] = useState(false);
   const submitAddP = async()=>{
     console.log("GH")
+    var err = false;
     let temp = {...examinee};
     
     if(examinee.subjectDetails.smoking === "true"){
@@ -64,30 +65,31 @@ const AddPatientCopy = ()=>{
     // PATCH 부분
     if(location.state.update && patch){
       console.log("patch")
-      axios.put(`/subjects/${temp.chartNumber}`,temp,{withCredentials : true})
+      await axios.put(`/subjects/${temp.chartNumber}`,temp,{withCredentials : true})
       .then((res)=>{
         console.log(res);
-        navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
       })
       .catch((error)=>{
+        err = true;
         console.log(error);alert("ERROR");
       })
     }
     // POST 부분
     else if(!location.state.update){
       console.log("post");
-      axios.post('/subjects',temp,{withCredentials : true})
+      await axios.post('/subjects',temp,{withCredentials : true})
       .then((res)=>{
         console.log(res);
-        navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
-        
       })
       .catch((error)=>{
+        err = true
         console.log(error);alert("ERROR");
       })
     }
     let date = new Date();
-
+    if(!err){
+      navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
+    }
   }
   const location = useLocation();
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
