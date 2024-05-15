@@ -67,6 +67,7 @@ const AddPatientCopy = ()=>{
       axios.put(`/subjects/${temp.chartNumber}`,temp,{withCredentials : true})
       .then((res)=>{
         console.log(res);
+        navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
       })
       .catch((error)=>{
         console.log(error);alert("ERROR");
@@ -78,13 +79,15 @@ const AddPatientCopy = ()=>{
       axios.post('/subjects',temp,{withCredentials : true})
       .then((res)=>{
         console.log(res);
+        navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
+        
       })
       .catch((error)=>{
         console.log(error);alert("ERROR");
       })
     }
     let date = new Date();
-    navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
+
   }
   const location = useLocation();
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
@@ -190,7 +193,7 @@ const AddPatientCopy = ()=>{
         console.log("HERE2")
         stopAgeRef.current.disabled = true;
         let copy = examinee.subjectDetails;
-        copy.stopAge = "";
+        copy.smokingStopAge = "";
         setExaminee({...examinee, subjectDetails: copy});
       }
     },200)
