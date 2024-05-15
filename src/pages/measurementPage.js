@@ -144,14 +144,15 @@ const MeasurementPage = () =>{
   const chartRatio=(trials,ver)=>{
     if(trials){
       // fvc volumFlowList min
+      const maxYArray = [];
       const minYArray = [];
       const maxXArray = [];
-      var volumFlowListMin;
+      var volumFlowListY;
       var volumFlowListMaxX;
       trials.map((item,idx)=>{
         //y축
         if(ver == 1){
-          volumFlowListMin = item.graph.volumeFlow.map((item)=>{
+          volumFlowListY = item.graph.volumeFlow.map((item)=>{
             return item.y;
           });
           //x축
@@ -159,7 +160,7 @@ const MeasurementPage = () =>{
             return item.x;
           });
         }else{
-          volumFlowListMin = item.map((item)=>{
+          volumFlowListY = item.map((item)=>{
             return item.y;
           });
           //x축
@@ -169,10 +170,12 @@ const MeasurementPage = () =>{
         }
         
         //각각의 y축 최소값
-        var min = Math.floor((Math.min(...volumFlowListMin)))
+        var min = Math.floor((Math.min(...volumFlowListY)))
+        var max = Math.floor((Math.max(...volumFlowListY)))
         if(min < -4){
           min -= 2;
         }
+        maxYArray.push(max);
         minYArray.push(min);
         //각각의 x축 최대값
         maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
@@ -203,7 +206,10 @@ const MeasurementPage = () =>{
       if(minY % 2 !=0 && minY <= -2){
         minY -= 1;
       }
-      
+      if(maxY < Math.max.apply(null,maxYArray)){
+        console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
+        maxY = Math.max.apply(null,maxYArray)+3;
+      }
     }
   }
   //그래프 선택
