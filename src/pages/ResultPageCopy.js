@@ -111,12 +111,13 @@ useEffect(()=>{
       // fvc volumFlowList min
       const minYArray = [];
       const maxXArray = [];
-      var volumFlowListMin;
+      const maxYArray = [];
+      var volumFlowListY;
       var volumFlowListMaxX;
       trials.map((item,idx)=>{
         //y축
         if(ver == 1){
-          volumFlowListMin = item.graph.volumeFlow.map((item)=>{
+          volumFlowListY = item.graph.volumeFlow.map((item)=>{
             return item.y;
           });
           //x축
@@ -124,7 +125,7 @@ useEffect(()=>{
             return item.x;
           });
         }else{
-          volumFlowListMin = item.map((item)=>{
+          volumFlowListY = item.map((item)=>{
             return item.y;
           });
           //x축
@@ -134,10 +135,12 @@ useEffect(()=>{
         }
         
         //각각의 y축 최소값
-        var min = Math.floor((Math.min(...volumFlowListMin)))
+        var min = Math.floor((Math.min(...volumFlowListY)))
+        var max = Math.floor((Math.max(...volumFlowListY)))
         if(min < -4){
           min -= 2;
         }
+        maxYArray.push(max);
         minYArray.push(min);
         //각각의 x축 최대값
         maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
@@ -166,6 +169,10 @@ useEffect(()=>{
       }
       if(minY % 2 !=0 && minY <= -2){
         minY -= 1;
+      }
+      if(maxY < Math.max.apply(null,maxYArray)){
+        console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
+        maxY = Math.max.apply(null,maxYArray)+3;
       }
     }
   }
