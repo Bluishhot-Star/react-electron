@@ -3238,7 +3238,14 @@ text-align: right;
   color: #aaa;
   font-weight: bold;
 }
-
+.clinicians-item-container .radio-container>div input:disabled{
+  border: 1px solid #ccc;
+  background: #ccc;
+}
+.clinicians-item-container .radio-container>div input:disabled + label{
+  color: #aaa;
+  font-weight: bold;
+}
 
 
 

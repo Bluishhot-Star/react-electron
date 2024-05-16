@@ -110,14 +110,14 @@ const MngClncs = () =>{
                   <div className="clinicians-item-name"><p>{item.clinicianName}</p></div>
                   <div className="clinicians-item-date"><p>{item.date}</p></div>
                   <div className="clinicians-item-roleName"><p>{item.roleName}</p></div>
-                  <div className="clinicians-item-status"><p>{item.status==='enabled' ? '승인': '비승인'}</p></div>
+                  <div className="clinicians-item-status"><p>{item.status==='enabled' ? '승인': item.status ==="pendingDeletion" ?  "삭제 대기" : '비승인'}</p></div>
                   <div className="clinicians-item-status-management radio-container" ref={(el)=>{cliniciansMngRef.current[index]=el}}>
                     <div className="radioBtn">
-                      <input id={item.clinicianId+"enable"} type='radio' defaultChecked={item.status === "enabled" ? true : false} name={item.clinicianId} className='statusTrue' value='enabled' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
+                      <input id={item.clinicianId+"enable"} type='radio' disabled={item.status === "pendingDeletion"} defaultChecked={item.status === "enabled" ? true : false} name={item.clinicianId} className='statusTrue' value='enabled' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
                       <label htmlFor={item.clinicianId+"enable"}>승인</label>
                     </div>
                     <div className="radioBtn">
-                      <input id={item.clinicianId+"disable"} type='radio' defaultChecked={item.status === "disabled" ? true : false} name={item.clinicianId} className='statusFalse' value='disabled' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
+                      <input id={item.clinicianId+"disable"} type='radio' disabled={item.status === "pendingDeletion"} defaultChecked={item.status === "disabled" ? true : false} name={item.clinicianId} className='statusFalse' value='disabled' onChange={(e)=>{statusChange(e,item.clinicianId, index)}}/>
                       <label htmlFor={item.clinicianId+"disable"}>거부</label>
                     </div>
                   </div>

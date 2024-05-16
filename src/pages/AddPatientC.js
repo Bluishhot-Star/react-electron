@@ -65,7 +65,13 @@ const AddPatientCopy = ()=>{
     // PATCH 부분
     if(location.state.update && patch){
       console.log("patch")
-      await axios.put(`/subjects/${temp.chartNumber}`,temp,{withCredentials : true})
+      await axios.put(`/subjects/${temp.chartNumber}`,
+      temp,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
       .then((res)=>{
         console.log(res);
       })
@@ -77,7 +83,15 @@ const AddPatientCopy = ()=>{
     // POST 부분
     else if(!location.state.update){
       console.log("post");
-      await axios.post('/subjects',temp,{withCredentials : true})
+
+      await axios.post('/subjects',
+        temp,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        },
+      )
       .then((res)=>{
         console.log(res);
       })
