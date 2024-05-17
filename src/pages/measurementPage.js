@@ -26,20 +26,15 @@ var volumFlowMaxX = 6;
 const MeasurementPage = () =>{
   const location = useLocation();
   let deviceInfo = useSelector((state) => state.deviceInfo ) 
-  let measureInfo = useSelector((state)=>state.info);
 
-  let data = location.state.data;
   let date = location.state.date;
-  let name = location.state.name;
   let type = location.state.type;
   let chartNumber = location.state.chartNumber;
 
   // const cookies = new Cookies();?
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
 
-  const [setCookie] = useCookies();
   let navigatorR = useNavigate();
-  let dispatch = useDispatch();
   let firstBtnRef = useRef();
   let secondBtnRef = useRef();
   let thirdBtnRef = useRef();
@@ -275,7 +270,6 @@ const MeasurementPage = () =>{
 
 
   // 검사 시작 상태
-  const [meaStart, setMeaStart] = useState(false);
   useEffect(()=>{
     if(totalData !== " " && totalData !== "Empty resource"){
       if(meaStart){
@@ -780,19 +774,15 @@ useEffect(()=>
   // 흡기 계수 (API에서 가져올 예정)
   const [inhaleCoefficient,setInhaleCoefficient] = useState(0.9);
 
-  const [dataResult, setDataResult] = useState([]);
+
   // 기기 없음 메세지
   const [noneDevice, setNoneDevice] = useState(false);
-  // 시작확인 메세지
-  const [startMsg, setStartMsg] = useState(false);
   // 검사 시작 전 구독상태
   const [notifyStart, setNotifyStart] = useState(false);
   // 구독 완료
   const [notifyDone, setNotifyDone] = useState(false);
   // 검사버튼 먼저 누르고 온 경우 notify 확인 후 구독 완료
   const [alNotifyDone, setAlNotifyDone] = useState(false);
-  // 검사 시작 전 준비완료 상태(구독완)
-  const [meaPreStart, setMeaPreStart] = useState(false);
 
   // 검사 활성화위한 호기 감지
   const [blow, setBlow] = useState(false);
@@ -800,20 +790,15 @@ useEffect(()=>
   const [blowF, setBlowF] = useState(false);
 
   // 검사 시작 상태
-  // const [meaStart, setMeaStart] = useState(false);
+  const [meaStart, setMeaStart] = useState(false);
   // 데이터 리스트
-  const [dataList, setDataList] = useState([]);
-  // real데이터 리스트
-  const [realDataList, setRealDataList] = useState([]);
+  const [dataList, setDataList] = useState([]); 
   // 검사시작 flag, 이 이후로 realData
   const [flag, setFlag] = useState(-1)
 
   // volume-flow 그래프 좌표
   const [volumeFlowList, setVolumeFlowList] = useState([]);
   const [timeVolumeList, setTimeVolumeList] = useState([]);
-  // let TvolumeFlowList = [];
-  // time-volume 그래프 좌표
-  // const [timeVolumeList, setTimeVolumeList] = useState([]);
 
 //-----------------------------------------------------------------------------------------------
 useEffect(()=>{
@@ -842,12 +827,12 @@ useEffect(()=>{
   // 기기 연결 여부 검사
   useEffect(()=>{
     if(deviceInfo.gatt){ //리스트에 있으면
-      setNoneDevice(false);
+      setNoneDevice(false); //기기없음상태 false (기기있음!)
       if(!deviceInfo.gatt.connected){ //연결여부
         //디바이스 연결X
-        setNoneDevice(true);
-        setDisconnectStat(true);
-        window.api.send("getConnectedDevice", "");
+        setNoneDevice(true); // 문구 & 블루투스 아이콘 css 변경
+        setDisconnectStat(true); // 연결된 기기 없음 팝업창
+        window.api.send("getConnectedDevice", ""); // 새로고침되도록..(?)
       }
       else{
         // 연결 O
@@ -856,19 +841,13 @@ useEffect(()=>{
     }
     else{ //기기없으면
       if(!disconnectConfirm){
-        setNoneDevice(true);
-        setDisconnectStat(true);
-        setDisconnectConfirm(true);
+        setNoneDevice(true); // 문구 & 블루투스 아이콘 css 변경
+        setDisconnectStat(true); // 연결된 기기 없음 팝업창 상태
+        setDisconnectConfirm(true); // 팝업창 한번만 나오도록
       }
     }
   })
   
-  //기기 없음 메세지 띄우기
-  useEffect(()=>{
-    if(noneDevice){
-      console.log("기기없음 메세지")
-    }
-  },[noneDevice])
 //----------------------------------------------------------------------------------------------- 222222
   
   // 연결 확인 & 구독 시작
@@ -886,24 +865,15 @@ useEffect(()=>{
   useEffect(()=>{
     if(notifyDone){
       setReadyAlert(true);
-      let time = setTimeout(() => {
-        setMeaPreStart(true);
-      }, 1000);
-      return ()=>{
-        clearTimeout(time)
-      }
     }
   },[notifyDone])
   useEffect(()=>{
-    if(meaPreStart){ //구독 완료시
-      // setDataList([])
-    }
-    else{
+    if(!blowF){ //구독 완료시
       firstBtnRef.current.classList += " disabled"
       secondBtnRef.current.classList += " disabled";
-      thirdBtnRef.current.classList += " disabled";
+      // thirdBtnRef.current.classList += " disabled";
     }
-  },[meaPreStart])
+  },[blowF])
 
 //----------------------------------------------------------------------------------------------- 44444
   // 구독 완료 후 처리
@@ -911,26 +881,26 @@ useEffect(()=>{
   useEffect(()=>{
     if(alNotifyDone){
       if(dataList.length == 0){
-        // setNotifyDone(true);
         setBlow(true);
       }
     }
   },[alNotifyDone])
 
-  useEffect(()=>{ 
-    if(dataList[0] == '2'){
-      setNotifyDone(true);
-    }
-    if(dataList[0] == '2' && dataList[1] == '2' && dataList[2] == '2'){
-      setBlow(true);
-    }
-    if(blow==true&&blowF==false){ //  입김 불면!
-      console.log(dataList[dataList.length-1].slice(0,1))
-      if(dataList[dataList.length-1].slice(0,1) == "0"){
-        //css 변화로 검사 활성화
-        if(secondBtnRef.current.classList.contains("disabled")){
-          // firstBtnRef.current.classList.remove("disabled");
-          secondBtnRef.current.classList.remove("disabled");
+  useEffect(()=>{
+    if(!blowF){
+      if(dataList[0] == '2'){
+        setNotifyDone(true);
+      }
+      if(dataList[0] == '2' && dataList[1] == '2' && dataList[2] == '2'){
+        setBlow(true);
+      }
+      if(blow==true){ //  입김 불면!
+        // console.log(dataList[dataList.length-1].slice(0,1))
+        if(dataList[dataList.length-1].slice(0,1) == "0"){
+          //css 변화로 검사 활성화
+          if(secondBtnRef.current.classList.contains("disabled")){
+            secondBtnRef.current.classList.remove("disabled");
+          }
         }
       }
     }
@@ -982,7 +952,6 @@ useEffect(()=>{
 
       let currItemR = dataList[flag.idx]; //현재 다룰 raw 데이터
       let currItem = dataCalculateStrategyE.convert(currItemR); // 데이터 전처리 후
-      let preItem = rawDataList[flag.rIdx-1]; //그 이전 데이터
       let TrawDataList = [...rawDataList];
 
       TrawDataList.push(currItem);
@@ -1038,19 +1007,6 @@ useEffect(()=>{
 
     }
   },[cVolume])
-  
-//-----------------------------------------------------------------------------------------------
-  // 시작 메세지 띄우기
-
-  useEffect(()=>{
-    if(startMsg){
-      //시작 메세지 띄우기
-      setStartMsg(false);
-      setConfirmStat(true);
-      // setDataList([])
-      // setMeaStart(true);
-    }
-  },[startMsg])
 
 //-----------------------------------------------------------------------------------------------
 
@@ -1661,19 +1617,20 @@ useEffect(()=>{
 
 
 //-----------------------------------------------------------------------------------------------
-  // 확인창 
+  // 시작 확인창 
   const [confirmStat, setConfirmStat] = useState(false);
+  // 시작 확인 팝업에서 확인 클릭시
   let confirmFunc = (val)=>{
     if(val=="confirm"){
-      setMeaPreStart(true);
+      // setMeaPreStart(true);
       setBlowF(true);
       setMeaStart(true);
     }
   }
 //-----------------------------------------------------------------------------------------------
   // 기기연결 확인창 
-  const [disconnectStat, setDisconnectStat] = useState(false);
-  const [disconnectConfirm, setDisconnectConfirm] = useState(false);
+  const [disconnectStat, setDisconnectStat] = useState(false); // 연결된 기기 없음 팝업창 띄우기
+  const [disconnectConfirm, setDisconnectConfirm] = useState(false); // 1번만 나오도록 설정
   let disconnectConfirmFunc = (val)=>{
     if(val=="confirm"){
       navigatorR("/setting");
@@ -1847,7 +1804,7 @@ useEffect(()=>{
 //     })
 // }
   const startBtnClicked = ()=>{
-    setStartMsg(true);
+    setConfirmStat(true);
     setGraphOnOff([...graphOnOff].fill(0))
   }
 
@@ -1988,7 +1945,7 @@ useEffect(()=>{
           </div>
           <div className="measure-msg-container">
             {
-            meaPreStart?
+            blowF?
               meaStart?
                 inF == -1 ?
                   <p className='measure-msg'>{"편하게 호흡을 시작해주세요."}</p>
@@ -2013,15 +1970,15 @@ useEffect(()=>{
               :
               saveMsg ? <p className='measure-msg'>{saveMsg}</p> : <p className='measure-msg'>{"바람을 불어서 활성화해주세요."}</p>
             :
-              notifyDone?
-              <p></p>
-              :
+              blow?
               <p className='measure-msg'>{noneDevice==false?"SpiroKit 연동이 완료되었습니다.\nSpiroKit 동작버튼을 켜주시고, 마우스피스 입구에 살짝 입김을 불어 검사 시작 버튼을 활성화 해주세요.":"SpiroKit 연동이 필요합니다."}</p>
+              :
+              <p className='measure-msg'>{"SpiroKit 연동이 필요합니다."}</p>
             }
           </div>
           <div className='measure-msg-picture'>
             {
-              meaPreStart?
+              blowF?
                 meaStart?
                   inF == -1 ?
                     <img src={process.env.PUBLIC_URL + '/measOUT.svg'} />
