@@ -888,15 +888,16 @@ useEffect(()=>{
 
   useEffect(()=>{
     if(!blowF){
-      if(dataList[0] == '2'){
+      if(dataList[0] == 0){
         setNotifyDone(true);
       }
-      if(dataList[0] == '2' && dataList[1] == '2' && dataList[2] == '2'){
+      if(dataList[0] == 0 && dataList[1] == 0 && dataList[2] == 0){
         setBlow(true);
       }
       if(blow==true){ //  입김 불면!
         // console.log(dataList[dataList.length-1].slice(0,1))
-        if(dataList[dataList.length-1].slice(0,1) == "0"){
+        // if(dataList[dataList.length-1].slice(0,1) == "0"){
+        if(dataList[dataList.length-1] == "0"){
           //css 변화로 검사 활성화
           if(secondBtnRef.current.classList.contains("disabled")){
             secondBtnRef.current.classList.remove("disabled");
@@ -914,12 +915,13 @@ useEffect(()=>{
     volumFlowMin = 0;
     volumFlowMaxX = 0;
     if(meaStart){
-      let temp = dataList.length;
+      setDataList([0,0]);
+      setRunTime(0);
       let time = setTimeout(() => {
         if(firstBtnRef.current.classList.contains("disabled"))firstBtnRef.current.classList.remove("disabled"); // 재측정 버튼 활성화
         secondBtnRef.current.classList += " disabled";
-        setFlag({idx: temp, rIdx: 1}); // idx : dataList에서의 인덱스, rIdx : realData에서의 인덱스
-        if(flagTo == 0){setFlagTo({...flagTo, from: 1});}
+        setFlag({idx: 0, rIdx: 1}); // idx : dataList에서의 인덱스, rIdx : realData에서의 인덱스
+        // if(flagTo == 0){setFlagTo({...flagTo, from: 1});}
       }, 1000);
       return ()=>{
         clearTimeout(time)
@@ -930,35 +932,38 @@ useEffect(()=>{
 //-----------------------------------------------------------------------------------------------
 
   const [rawDataList, setRawDataList] = useState([0]); // raw data 처리 전 (0만 뗀거)
-  const [flagTo, setFlagTo] = useState(0); // rawDataList에서 잘라서 post
+  // const [flagTo, setFlagTo] = useState(0); // rawDataList에서 잘라서 post
   const [calDataList, setCalDataList] = useState([]); // raw data 처리 -> time/volume/lps/exhale
-  const [calFlag, setCalFlag] = useState(0); // calDataList에서 그래프 좌표로 처리할 index=>현재 처리된 index
+  const [calFlag, setCalFlag] = useState(-1); // calDataList에서 그래프 좌표로 처리할 index=>현재 처리된 index
+
+
 
   // 그래프 좌표 생성 시작
   useEffect(()=>{
-    if(calDataList[calFlag] && meaStart){
+    if(meaStart && calDataList[calFlag]){
       let item = calDataList[calFlag];
       setVFGraphData(item.volume, item.lps);
       setTVGraphData(item.time, item.volume, item.exhale);
-      setCalFlag(calFlag+1);
+      // setCalFlag(calFlag+1);
     }
-  },[flag, calDataList])
+  },[calDataList])
 
   // raw데이터 들어오면 -> rawDataList에 넣기
-  useEffect(()=>{
-    if(flag.idx>0 && dataList[flag.idx]){
+  // useEffect(()=>{
+  //   if(flag !== -1){
 
-      // let data = [...dataList.slice(parseInt(flag))];
+  //     // let data = [...dataList.slice(parseInt(flag))];
 
-      let currItemR = dataList[flag.idx]; //현재 다룰 raw 데이터
-      let currItem = dataCalculateStrategyE.convert(currItemR); // 데이터 전처리 후
-      let TrawDataList = [...rawDataList];
+  //     let currItemR = dataList[flag.idx]; //현재 다룰 raw 데이터
+  //     // let currItem = dataCalculateStrategyE.convert(currItemR); // 데이터 전처리 후
+  //     // let TrawDataList = [...rawDataList];
 
-      TrawDataList.push(currItem);
-      setRawDataList(TrawDataList);
-      setFlag({idx : flag.idx+1, rIdx: flag.rIdx+1})
-    }
-  },[dataList, flag])
+  //     // TrawDataList.push(currItem);
+  //     // setRawDataList(TrawDataList);
+  //     setRawDataList([...rawDataList, currItemR]);
+  //     setFlag({idx : flag.idx+1, rIdx: flag.rIdx+1})
+  //   }
+  // },[dataList])
 
 
 //-----------------------------------------------------------------------------------------------
@@ -969,9 +974,9 @@ useEffect(()=>{
   const [cTime, setCTime] = useState();
   const [cVolume, setCVolume] = useState(-999);
   const [cExhale, setCExhale] = useState();
-  useEffect(()=>{
-    let previous = rawDataList[rawDataList.length-2];
-    let current = rawDataList[rawDataList.length-1];
+  useEffect(()=>{ 
+    let previous = dataList[dataList.length-2];
+    let current = dataList[dataList.length-1];
     let time = dataCalculateStrategyE.getTime(current);
     let lps = dataCalculateStrategyE.getCalibratedLPS(calibratedLps, previous, current, inhaleCoefficient, exhaleCoefficient);
     let exhale = dataCalculateStrategyE.isExhale(current);
@@ -980,7 +985,8 @@ useEffect(()=>{
     if(cExhale !== exhale){
       if(sessionVol !== 0 ){
         let tempSesCnt = sessionCount + 1
-        setSessionCount(tempSesCnt); 
+        setSessionCount(tempSesCnt);
+        setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
       }
     }
     if(cExhale && timerReady && !timerStart && !measureDone){
@@ -990,7 +996,7 @@ useEffect(()=>{
     setCExhale(exhale);
     setCTime(time);
     setCalibratedLps(lps)
-  },[rawDataList])
+  },[dataList])
 
   useEffect(()=>{
     if(calibratedLps !== -10){
@@ -999,12 +1005,11 @@ useEffect(()=>{
     }
   },[calibratedLps]);
   useEffect(()=>{
-    if(cVolume !== -999){
+    if(cVolume !== -999 && meaStart){
       let metrics = new FluidMetrics(cTime, calibratedLps, cVolume);
       metrics.setExhale(cExhale);
-      calDataList.push(metrics);
-      setCalDataList(calDataList);
-
+      setCalDataList([...calDataList, metrics]);
+      if(calFlag == -1 && meaStart){setCalFlag(0)};
     }
   },[cVolume])
 
@@ -1019,11 +1024,12 @@ useEffect(()=>{
       //초기값 세팅
       if(volumeFlowList.length == 0){
         preXY = {x:0, y:0}
+        volumeFlowList.push({x:0, y:0});
       }
       else{
         preXY = volumeFlowList[volumeFlowList.length-1]
       }
-  
+      
       // 흡기 시
       if (rawF < 0){
         if(!inFDone && meaStart && rawV!==0){ //흡기선?
@@ -1055,7 +1061,7 @@ useEffect(()=>{
         }
         if(timerReady && timerStart && !measureDone){
           if(volumeFlowList[calFlag] && volumeFlowList[calFlag]["y"] < 0){
-            setFlagTo({...flagTo, to: flagTo.from+flag.rIdx-1});
+            // setFlagTo({...flagTo, to: flagTo.from+calFlag});
             setTimerStart(false);
             setMeasureDone(true);
           }
@@ -1069,10 +1075,11 @@ useEffect(()=>{
         }
         x = preXY['x'] + rawV;
         if(timerReady && timerStart && !measureDone){
-          if(rawF == 0 && runTime>30){
-            setFlagTo({...flagTo, to: flagTo.from+flag.rIdx-1});
+          if(rawF == 0 && runTime>300){
+            // setFlagTo({...flagTo, to: flagTo.from+calFlag});
             setTimerStart(false);
             setMeasureDone(true);
+            // return;
           }
         }
       }
@@ -1132,6 +1139,7 @@ useEffect(()=>{
 
       volumeFlowList.push({x: x, y:rawF});
       setVolumeFlowList(volumeFlowList);
+      setCalFlag(calFlag+1);
     }
     catch(err){
       console.log(err)
@@ -1209,7 +1217,19 @@ useEffect(()=>{
   function onDisconnected(event) {
     console.log('> Bluetooth Device disconnected');
   }
-  
+  useEffect(()=>{
+    function handleCharacteristicValueChanged(event) {
+      // 데이터 처리 및 UART 프로토콜 해석
+      arrayToString(event.target.value)
+    }
+    if(txCharRef&&txCharRef.current){
+      // Notify(구독) 이벤트 핸들러 등록
+      txCharRef.current.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
+      return function cleanup() {
+        txCharRef.current.removeEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
+    };
+  }
+  },[txCharRef.current])
   // rawData 문자열
   // let [result, setResult] = useState();
   //데이터 문자로 바꾸기
@@ -1220,10 +1240,22 @@ useEffect(()=>{
   let arrayToString = async(temp)=>{
     // let buffer = temp.buffer;
     // rawData = String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
-    dataList.push(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim());
-    setDataList([...dataList]);
+    // dataList.push(dataCalculateStrategyE.convert(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()))
+    let data = dataCalculateStrategyE.convert(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim())
+    if(data !== undefined && data!==null){
+      setData(
+          data
+      );
+    }
     // return String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
   }
+  const [data, setData] = useState(null);
+  useEffect(()=>{
+    if(data!== null){
+      setDataList([...dataList, data]);
+    }
+  },[data])
+
   // //데이터 핸들링
   // let deviceDataHandling = (arr)=>{
   //   let tempArr = [];
@@ -1233,10 +1265,7 @@ useEffect(()=>{
   //   setResult(tempArr.join(' '));
   // }
   // 데이터 출력
-  function handleCharacteristicValueChanged(event) {
-    // 데이터 처리 및 UART 프로토콜 해석
-    arrayToString(event.target.value)
-  }
+  
 
 
 
@@ -1514,7 +1543,7 @@ useEffect(()=>{
 
   const measurementEnd = async()=>{
     let rDataList = [];
-    rawDataList.slice(flagTo.from,flagTo.to+1).map((num)=>rDataList.push(String(num).padStart(9, "0")))
+    dataList.slice(0,calFlag).map((num)=>rDataList.push(String(num).padStart(9, "0")))
     while (rDataList[rDataList.length-1].slice(0,1) == 1) {
       rDataList.pop()
     }
@@ -1534,6 +1563,7 @@ useEffect(()=>{
       {withCredentials : true})
       .then((res)=>{
         console.log(res);
+        setDataList([0,0])
       })
       .catch((err)=>{
         console.log(err);
@@ -1699,7 +1729,7 @@ useEffect(()=>{
       setTimerReady(false);
       setRunTime(0);
       setMeasureDone(false);
-      setFlagTo({from:rawDataList.length, to:""})
+      // setFlagTo({from:1, to:""})
     }, 500);
     return ()=>{
       clearTimeout(time)
@@ -1735,15 +1765,16 @@ useEffect(()=>{
       removeTick()
       setInF(-1);
       setInFDone(false);
+      setDataList([0,0]);
       setVolumeFlowList([{x:0, y:0}]);
       setTimeVolumeList([{x:0, y:0}]);
-      setCalDataList([calDataList[0]]);
+      setCalDataList([]);
       setCalFlagTV(1);
       setCalFlag(1);
       setTimerReady(false);
       setRunTime(0);
       setMeasureDone(false);
-      setFlagTo({from:rawDataList.length, to:""});
+      // setFlagTo({from:1, to:""});
       setTrigger(-1)
       firstBtnRef.current.classList+=" disabled";
       if(secondBtnRef.current.classList.contains("disabled")){
@@ -2068,8 +2099,8 @@ useEffect(()=>{
               }
             }}> <RiLungsLine className='lungIcon'/><p>{meaStart ? "검사 저장" : "검사 시작"}</p></div>
             <div ref={thirdBtnRef} onClick={()=>{
-              console.log(flagTo);
-              console.log(dataList.slice(flagTo.from, flagTo.to+1).toString().replaceAll(","," "));
+              // console.log(flagTo);
+              // console.log(dataList.slice(flagTo.from, flagTo.to+1).toString().replaceAll(","," "));
             }}><p>검사 종료</p></div>
           </div>
 
