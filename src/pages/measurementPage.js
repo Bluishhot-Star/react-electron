@@ -64,12 +64,14 @@ const MeasurementPage = () =>{
     getMeasureData(date)
   },[])
   const simpleResult = async(id,date)=>{
+
     await axios.delete(`/measurements/${id}` , {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     }).then((res)=>{
       console.log(res);
+
     }).catch((err)=>{
       console.log(err);
     })
@@ -1851,9 +1853,19 @@ useEffect(()=>{
   useEffect(()=>{
     console.log(limit)
   },[limit])
+
+  const [deleteAlert,setDeleteAlert] = useState(false);
+  // const [deleteButton,setDeleteButton] = useState(false);
+  const [measurementId,setMeasurementId] = useState();
+  // useEffect(()=>{
+  //   if(deleteButton){
+  //   }
+  // },[deleteButton])
+  
   return(
     <div className="measurement-page-container">
       {<Alert inputRef={alertRef} contents={"검사 저장에 실패했습니다.\n폐기능 검사는 하루 최대 8회 까지만 검사할 수 있습니다.."}/>}
+      {deleteAlert ? <Confirm content={"선택하신 검사를 삭제하시겠습니까?"} btn={true} onOff={setDeleteAlert} select={()=>simpleResult(measurementId,date)}/> : null}
       {saveGAlert ? <Confirm content={"검사를 저장하시려면 확인 버튼을 눌러주세요.\n해당 검사를 취소하고 싶다면 취소 버튼을 눌러주세요."} btn={true} onOff={setSaveGAlert} select={selectSave}/> : null}
       {saveBAlert ? <Confirm content={`${strongTime}초 이상 강하게 호흡을 불지 않아, 유효하지 않은 검사입니다.\n그대로 검사를 저장하시겠습니까?`} btn={true} onOff={setSaveBAlert} select={selectSave}/> : null}
       {confirmStat ? <Confirm content="검사를 시작하시겠습니까?" btn={true} onOff={setConfirmStat} select={confirmFunc}/> : null}
@@ -2109,12 +2121,18 @@ useEffect(()=>{
                 {
                 totalData == " " || totalData == "Empty resource" || !totalData ? null :
                   totalData.trials.map((item, index)=>(
-                    <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{console.log(simpleResultsRef.current[index]);console.log(item.measurementId);selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
+                    <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
-                    <FaSquareXmark className='deleteIcon'  style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); if(!meaStart){simpleResult(item.measurementId, date);}}}/>
+                    <FaSquareXmark className='deleteIcon'  style={{color: "#ff0000",}} onClick={(e)=>{
+                      e.stopPropagation(); 
+                        if(!meaStart){
+                          setDeleteAlert(true);
+                          setMeasurementId(item.measurementId);
+                        };
+                      }}/>
                     <div className='simple-result-title-date'>
                       <div className='simple-result-title'>{item.bronchodilator}</div>
-                      <div className='simple-result-date'>({item.date})</div>
+                      <div className='simple-result-date'>({item.date})</div> 
                     </div>
                       
                     </div>

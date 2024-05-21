@@ -876,33 +876,46 @@ useEffect(()=>{
   const [date, setDate] = useState(location.state.date);
   useEffect(()=>{
     if(totalData.chartNumber){
-      axios.get(`/subjects/${totalData.chartNumber}/histories?from=${inspectionDate.start === "" ? "2000-01-01" : inspectionDate.start}&to=${inspectionDate.end === "" ? "2099-01-01" : inspectionDate.end}` , {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }}).then((res)=>{
-  
-          if(res.data.response.length !== 0){
-            setDate(res.data.response);
-            report(res.data.response);
-          }
-          else{
-            setTotalData({
-              info: totalData.info,
-              fvc:'Empty resource',
-              svc:'Empty resource',
-              date:"",
-              birth: totalData.birth,
-              chartNumber: totalData.chartNumber,
-            })
-            
-            setDate([]);
-          }
-        }).catch((err)=>{
-          console.log(err);
-          
-        })
+      search();
     }
   },[inspectionDate])
+
+  useEffect(()=>{
+    if(state){
+      console.log(state)
+
+      search();
+    }
+  },[])
+
+  const search= () =>{
+    axios.get(`/subjects/${state.chartNumber}/histories?from=${inspectionDate.start === "" ? "2000-01-01" : inspectionDate.start}&to=${inspectionDate.end === "" ? "2099-01-01" : inspectionDate.end}` , {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }}).then((res)=>{
+
+        if(res.data.response.length !== 0){
+          setDate(res.data.response);
+          console.log(res.data.response[0])
+          report(res.data.response[0]);
+        }
+        else{
+          setTotalData({
+            info: totalData.info,
+            fvc:'Empty resource',
+            svc:'Empty resource',
+            date:"",
+            birth: totalData.birth,
+            chartNumber: totalData.chartNumber,
+          })
+          
+          setDate([]);
+        }
+      }).catch((err)=>{
+        console.log(err);
+        
+      })
+  }
 
   const [dateSelectorStat, setDateSelectorStat] = useState(false);
   const [goTO, setGoTO] = useState(false)
@@ -925,8 +938,8 @@ useEffect(()=>{
   },[dateSelectIdx])
   
   const report = async(tDate)=>{
-    setMeasDate(tDate[0]);
-    await axios.get(`/v3/subjects/${totalData.chartNumber}/types/fvc/results/${tDate[0]}` , {
+    setMeasDate(tDate);
+    await axios.get(`/v3/subjects/${state.chartNumber}/types/fvc/results/${tDate}` , {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -938,7 +951,7 @@ useEffect(()=>{
     }).catch((err)=>{
       console.log(err);
     })
-    await axios.get(`/v3/subjects/${totalData.chartNumber}/types/svc/results/${tDate[0]}` , {
+    await axios.get(`/v3/subjects/${state.chartNumber}/types/svc/results/${tDate}` , {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -993,8 +1006,7 @@ useEffect(()=>{
     }).catch((err)=>{
       console.log(err);
     })
-    report(date.split(' '));
-
+    report(measDate);
   }
   
   useEffect(()=>{
@@ -1043,11 +1055,13 @@ useEffect(()=>{
       setGoToResult(true);
     }
   },[viewer])
-
+  const [deleteAlert,setDeleteAlert] = useState(false);
+  const [measurementId,setMeasurementId] = useState();
   
   return( 
     
     <div className="result-page-container">
+      {deleteAlert ? <Confirm content={"선택하신 검사를 삭제하시겠습니까?"} btn={true} onOff={setDeleteAlert} select={()=>simpleResult(measurementId,date)}/> : null}
       {goToResult ? <Confirm content={"잠시만 기다려주세요."} btn={false} onOff={setGoToResult}/> : null}
       {dateSelectorStat ? <DateSelector data={inspectionDate} onOff={setDateSelectorStat} select={dateSelect}/> : null}
         <div className="nav">
@@ -1113,7 +1127,7 @@ useEffect(()=>{
             <div className="measure-item-containerC">
               { totalData.date ? 
               totalData.date.map((item, index)=>(
-                <div ref={(el)=>{dateSelectorRef.current[index]=el}} key={item} className={"measure-item "} onClick={()=>{report([item]); setDateSelectIdx(index)}}>
+                <div ref={(el)=>{dateSelectorRef.current[index]=el}} key={item} className={"measure-item "} onClick={()=>{report(item); setDateSelectIdx(index)}}>
                   <div className='measure-item-date'>{item}</div>
 
                 </div>
@@ -1220,7 +1234,11 @@ useEffect(()=>{
                 totalData.fvc.trials.map((item, index)=>(
                   <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
-                      <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
+                      <FaSquareXmark className='deleteIcon'  style={{color: "#ff0000",}} onClick={(e)=>{
+                        e.stopPropagation(); 
+                        setDeleteAlert(true);
+                        setMeasurementId(item.measurementId);
+                      }}/>
                       <div className='simple-result-title-date'>
                         <div className='simple-result-title'>{item.bronchodilator}</div>
                         <div className='simple-result-date'>({item.date})</div>
