@@ -138,7 +138,7 @@ useEffect(()=>{
         var min = Math.floor((Math.min(...volumFlowListY)))
         var max = Math.floor((Math.max(...volumFlowListY)))
         if(min < -4){
-          min -= 2;
+          // min -= 2;
         }
         maxYArray.push(max);
         minYArray.push(min);
@@ -147,7 +147,6 @@ useEffect(()=>{
       })
       //y축 최소값
       minY = Math.min.apply(null,minYArray);
-      
       //y축 최대값
       maxY = Math.abs(minY) * 2;
       //x축 최대값
@@ -159,7 +158,8 @@ useEffect(()=>{
         if(maxX % 2 != 0){
           maxX -= 1;
         }
-        minY = -maxX/3*2;
+        minY = -maxX/3;
+        // minY = -maxX/3*2;
         //소수점이 0.7이라면
         if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
           minY -= 0.1;
@@ -174,6 +174,8 @@ useEffect(()=>{
         console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
         maxY = Math.max.apply(null,maxYArray)+3;
       }
+      console.log(minY)
+
     }
   }
   
@@ -220,6 +222,7 @@ useEffect(()=>{
       setTrigger(trigger+1);
     }
     setGraphOnOff(temp);
+
   }
 
   //svc 그래프 선택
@@ -242,6 +245,7 @@ useEffect(()=>{
       setSvcTrigger(svcTrigger+1);
     }
     setSvcGraphOnOff(temp);
+    setTemp(false);
   }
 
   useEffect(()=>{
@@ -642,7 +646,7 @@ useEffect(()=>{
 
   useEffect(()=>{
     setTemp(false);
-  },[FvcSvc])
+  },[FvcSvc,totalData])
 
   useEffect(()=>{
     if(temp){
@@ -964,6 +968,8 @@ useEffect(()=>{
       console.log(err);
     })
     setGoTO(true);
+    setTemp(false);
+
   }
 
 
@@ -1006,6 +1012,7 @@ useEffect(()=>{
     }).catch((err)=>{
       console.log(err);
     })
+    setTemp(true);
     report(measDate);
   }
   
@@ -1061,7 +1068,7 @@ useEffect(()=>{
   return( 
     
     <div className="result-page-container">
-      {deleteAlert ? <Confirm content={"선택하신 검사를 삭제하시겠습니까?"} btn={true} onOff={setDeleteAlert} select={()=>simpleResult(measurementId,date)}/> : null}
+      {deleteAlert ? <Confirm content={"선택하신 검사를 삭제하시겠습니까?"} btn={true} onOff={setDeleteAlert} select={(e)=>{if(e === "confirm"){simpleResult(measurementId,date);}}}/> : null}
       {goToResult ? <Confirm content={"잠시만 기다려주세요."} btn={false} onOff={setGoToResult}/> : null}
       {dateSelectorStat ? <DateSelector data={inspectionDate} onOff={setDateSelectorStat} select={dateSelect}/> : null}
         <div className="nav">
@@ -1232,7 +1239,7 @@ useEffect(()=>{
                 FvcSvc == "fvc" ?
                 totalData.fvc === '' || totalData.fvc === 'Empty resource'? <div className='empty-simple-container'></div> :
                 totalData.fvc.trials.map((item, index)=>(
-                  <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{selectGraph(index)}} key={item.measurementId}  className='simple-result-container'>
+                  <div ref={(el)=>{simpleResultsRef.current[index]=el}} onClick={()=>{selectGraph(index);}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
                       <FaSquareXmark className='deleteIcon'  style={{color: "#ff0000",}} onClick={(e)=>{
                         e.stopPropagation(); 
@@ -1290,7 +1297,7 @@ useEffect(()=>{
                 :
                 totalData.svc === "Empty resource" ? null:
                 totalData.svc.trials.map((item, index)=>(
-                  <div ref={(el)=>{svcSimpleResultsRef.current[index]=el}} onClick={()=>{selectSvcGraph(index)}} key={item.measurementId}  className='simple-result-container'>
+                  <div ref={(el)=>{svcSimpleResultsRef.current[index]=el}} onClick={()=>{selectSvcGraph(index);setTemp(true);}} key={item.measurementId}  className='simple-result-container'>
                     <div className='simple-result-title-container'>
                       <FaSquareXmark className='deleteIcon' style={{color: "#ff0000",}} onClick={(e)=>{e.stopPropagation(); simpleResult(item.measurementId, item.date)}}/>
                       <div className='simple-result-title-date'>
