@@ -3,9 +3,12 @@ import axios from "axios";
 import { useLocation,useNavigate } from 'react-router-dom';
 import { Chart as ChartJS,LinearScale,PointElement,LineElement,BarElement,Tooltip,Legend,CategoryScale} from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
-
+import annotationPlugin from 'chartjs-plugin-annotation';
 import { debounce } from 'lodash'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+var maxY = 0;
+var minY = 0;
+var maxX = 0;
 function DetailPage(){
   const location = useLocation();
   const navigator = useNavigate();
@@ -72,7 +75,7 @@ function DetailPage(){
     title: "FEV%",
     upper: "",
   });
-  ChartJS.register(LinearScale, PointElement, LineElement,BarElement, Tooltip, Legend,ChartDataLabels, CategoryScale);
+  ChartJS.register(LinearScale, PointElement, LineElement,BarElement, Tooltip, Legend,ChartDataLabels,annotationPlugin, CategoryScale);
   const [preValSet, setPreValSet] = useState(0);
   const [postValSet, setPostValSet] = useState(0);
   useEffect(()=>{
@@ -745,6 +748,7 @@ function DetailPage(){
       setVolumeFlow(volumeFlowList);
       setTimeVolume(timeVolumeList);
       setTvMax(timeVolumeMaxList);
+      chartRatio(trials,1)
     }
   },[])
 
@@ -788,6 +792,77 @@ function DetailPage(){
     },]
   })
 
+  const chartRatio=(trials,ver)=>{
+    if(trials){
+      // fvc volumFlowList min
+      const minYArray = [];
+      const maxXArray = [];
+      const maxYArray = [];
+      var volumFlowListY;
+      var volumFlowListMaxX;
+      trials.map((item,idx)=>{
+        //y축
+        if(ver == 1){
+          volumFlowListY = item.graph.volumeFlow.map((item)=>{
+            return item.y;
+          });
+          //x축
+          volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
+            return item.x;
+          });
+        }else{
+          volumFlowListY = item.map((item)=>{
+            return item.y;
+          });
+          //x축
+          volumFlowListMaxX = item.map((item)=>{
+            return item.x;
+          });
+        }
+        
+        //각각의 y축 최소값
+        var min = Math.floor((Math.min(...volumFlowListY)))
+        var max = Math.floor((Math.max(...volumFlowListY)))
+        if(min < -4){
+          min -= 2;
+        }
+        maxYArray.push(max);
+        minYArray.push(min);
+        //각각의 x축 최대값
+        maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
+      })
+      //y축 최소값
+      minY = Math.min.apply(null,minYArray);
+      
+      //y축 최대값
+      maxY = Math.abs(minY) * 2;
+      //x축 최대값
+      maxX = maxY+Math.abs(minY);
+      
+      //계산한 x축 보다 실제 x축이 더 클 경우
+      if(maxX < Math.max.apply(null,maxXArray)){
+        maxX = Math.max.apply(null,maxXArray);
+        if(maxX % 2 != 0){
+          maxX -= 1;
+        }
+        minY = -maxX/3*2;
+        //소수점이 0.7이라면
+        if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
+          minY -= 0.1;
+        }
+        maxY = Math.abs(minY*2);
+        
+      }
+      if(minY % 2 !=0 && minY <= -2){
+        minY -= 1;
+      }
+      if(maxY < Math.max.apply(null,maxYArray)){
+        console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
+        maxY = Math.max.apply(null,maxYArray)+3;
+      }
+    }
+  }
+
   const graphOption={
     plugins:{
       legend: {
@@ -811,7 +886,8 @@ function DetailPage(){
       x: {
         axios: 'x',
         min: 0,
-        max: parseFloat(Math.max(...tvMax)),
+        // max: parseFloat(Math.max(...tvMax)),
+        suggestedMax: maxX,
         // suggestedMax: 6.0,
         ticks:{
           autoSkip: false,
@@ -835,15 +911,19 @@ function DetailPage(){
         gridLines:{
           zeroLineColor:'rgb(0, 0, 255)',
         },
-        axios: 'y',
-        // min: -9,
-        // suggestedMax:12,
-        // suggestedMin:-6,
-        grace:"10%",
+        min : minY,
+        grace:"5%",
+        max:maxY,
         ticks: {
+          precision:10,
           major: true,
           beginAtZero: true,
-          stepSize : 1,
+          stepSize:(context)=>{
+            if(context.scale.min === -1){
+              return 0.5;
+            }
+            return 1;
+          },
           fontSize : 10,
           textStrokeColor: 10,
           precision: 1,
@@ -864,6 +944,85 @@ function DetailPage(){
       },
     },
   }
+  // const graphOption={
+  //   plugins:{
+  //     legend: {
+  //         display: false
+  //     },
+  //     resizeDelay:0,
+  //     datalabels: false,
+  //   },
+  //   responsive: true,
+  //   animation:{
+  //     duration:0
+  //   },
+  //   maintainAspectRatio: false,
+  //   interaction: false, 
+  //   elements: {
+  //     point: {
+  //       radius: 0,
+  //     },
+  //   },
+  //   scales: { 
+  //     x: {
+  //       axios: 'x',
+  //       min: 0,
+  //       suggestedMax: maxX,
+  //       // max: parseInt(Math.max(...tvMax)),
+  //       ticks:{
+  //         autoSkip: false,
+  //         beginAtZero: false,
+  //         max: 12.0,
+  //       },
+  //       grid:{
+  //         color: function(context) {
+  //           if (context.index === 0){
+  //             return '#20a0b3';
+  //           }
+  //           else{
+  //             return '#bbdfe4';
+  //           }
+  //         },
+  //       }
+  //     },
+  //     y: {
+  //       gridLines:{
+  //         zeroLineColor:'rgb(0, 0, 255)',
+  //       },
+  //       axios: 'y',
+  //       min : minY,
+  //       grace:"5%",
+  //       max:maxY,
+  //       ticks: {
+  //         precision:10,
+  //         major: true,
+  //         beginAtZero: true,
+  //         stepSize:(context)=>{
+  //           if(context.scale.min === -1){
+  //             return 0.5;
+  //           }
+  //           return 1;
+  //         },
+  //         fontSize : 10,
+  //         textStrokeColor: 10,
+  //         precision: 1,
+  //       },
+  //       grid:{
+  //         color: function(context) {
+  //           if (context.index === 0){
+  //             return '#20a0b3';
+  //           }
+  //           else if (context.tick.value > 0) {
+  //             return '#bbdfe4';
+  //           } else if (context.tick.value < 0) {
+  //             return '#bbdfe4';
+  //           }
+  //           return '#20a0b3';
+  //         },
+  //       }
+  //     },
+  //   },
+  // }
 
   const graphOption2={
     plugins:{
