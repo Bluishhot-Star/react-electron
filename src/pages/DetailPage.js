@@ -821,10 +821,10 @@ function DetailPage(){
         }
         
         //각각의 y축 최소값
-        var min = Math.floor((Math.min(...volumFlowListY)))
+        var min = Math.abs((Math.min(...volumFlowListY)) - 1)- Math.abs(Math.floor((Math.min(...volumFlowListY)))) > 0.5 && Math.floor((Math.min(...volumFlowListY))) < -4? Math.floor((Math.min(...volumFlowListY))) - 1 : Math.floor((Math.min(...volumFlowListY)))
         var max = Math.floor((Math.max(...volumFlowListY)))
         if(min < -4){
-          min -= 2;
+          // min -= 2;
         }
         maxYArray.push(max);
         minYArray.push(min);
@@ -833,33 +833,37 @@ function DetailPage(){
       })
       //y축 최소값
       minY = Math.min.apply(null,minYArray);
-      
       //y축 최대값
       maxY = Math.abs(minY) * 2;
       //x축 최대값
       maxX = maxY+Math.abs(minY);
-      
       //계산한 x축 보다 실제 x축이 더 클 경우
       if(maxX < Math.max.apply(null,maxXArray)){
         maxX = Math.max.apply(null,maxXArray);
         if(maxX % 2 != 0){
           maxX -= 1;
         }
-        minY = -maxX/3*2;
+        minY = Math.ceil(-maxX/3);
+        // minY = -maxX/3*2;
         //소수점이 0.7이라면
         if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
           minY -= 0.1;
         }
         maxY = Math.abs(minY*2);
-        
       }
-      if(minY % 2 !=0 && minY <= -2){
+      if((minY % 2 !=0 && minY <= -2)){
         minY -= 1;
+        maxX = maxY+Math.abs(minY);
       }
       if(maxY < Math.max.apply(null,maxYArray)){
         console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
-        maxY = Math.max.apply(null,maxYArray)+3;
+        maxY = Math.max.apply(null,maxYArray)+1;
+        if(minY > Math.floor(maxY/2)){
+          minY = Math.floor(maxY/2);
+        }
+        maxX = maxY+Math.abs(minY);
       }
+
     }
   }
 
