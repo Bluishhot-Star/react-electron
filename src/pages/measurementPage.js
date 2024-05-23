@@ -1815,8 +1815,9 @@ useEffect(()=>{
   const [saveReady, setSaveReady] = useState(false);
   useEffect(()=>{
     if(measureDone){
-      setSaveReady(true);
       setMeaStart(false);
+      setTimerStart(false);
+      setSaveReady(true);
     }
   },[measureDone])
 
