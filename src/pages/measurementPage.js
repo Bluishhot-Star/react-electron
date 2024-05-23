@@ -926,9 +926,26 @@ useEffect(()=>{
     volumFlowMin = 0;
     volumFlowMaxX = 0;
     if(meaStart){
-      setDataList([0,0]);
       removeTick();
+      setInF(-1);
+      setDataList([0,0]);
+      setInFDone(false);
+      setVolumeFlowList([{x:0, y:0}]);
+      setTimeVolumeList([{x:0, y:0}]);
+      setCalDataList([]);
+      setCalFlagTV(1);
+      setCalFlag(1);
+      setTimerReady(false);
       setRunTime(0);
+      setMeasureDone(false);
+      setTickColor(0);
+      setTickOn(false);
+      let ticks = document.getElementsByClassName('tickColor');
+      Array.prototype.map.call(ticks,it=>{
+        it.style.background=`#f7f7f7`;
+      })
+      // setFlagTo({from:1, to:""});
+      setTrigger(-1)
       let time = setTimeout(() => {
         if(firstBtnRef.current.classList.contains("disabled"))firstBtnRef.current.classList.remove("disabled"); // 재측정 버튼 활성화
         secondBtnRef.current.classList += " disabled";
@@ -986,30 +1003,32 @@ useEffect(()=>{
   const [cTime, setCTime] = useState();
   const [cVolume, setCVolume] = useState(-999);
   const [cExhale, setCExhale] = useState();
-  useEffect(()=>{ 
-    let previous = dataList[dataList.length-2];
-    let current = dataList[dataList.length-1];
-    let time = dataCalculateStrategyE.getTime(current);
-    let lps = dataCalculateStrategyE.getCalibratedLPS(calibratedLps, previous, current, inhaleCoefficient, exhaleCoefficient);
-    let exhale = dataCalculateStrategyE.isExhale(current);
-    
-
-    if(cExhale !== exhale){
-      if(sessionVol !== 0 ){
-        let tempSesCnt = sessionCount + 1
-        setSessionCount(tempSesCnt);
-        setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
+  useEffect(()=>{
+    if(meaStart){
+      let previous = dataList[dataList.length-2];
+      let current = dataList[dataList.length-1];
+      let time = dataCalculateStrategyE.getTime(current);
+      let lps = dataCalculateStrategyE.getCalibratedLPS(calibratedLps, previous, current, inhaleCoefficient, exhaleCoefficient);
+      let exhale = dataCalculateStrategyE.isExhale(current);
+      
+  
+      if(cExhale !== exhale){
+        if(sessionVol !== 0 ){
+          let tempSesCnt = sessionCount + 1
+          setSessionCount(tempSesCnt);
+          setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
+        }
       }
-    }
-    if(cExhale && timerReady && !timerStart && !measureDone){
-      setTimerStart(true);
-    }
-
-    setCExhale(exhale);
-    setCTime(time);
-    setCalibratedLps(lps)
-    if(exhale && meaStart){
-      setShadow(lps);
+      if(cExhale && timerReady && !timerStart && !measureDone){
+        setTimerStart(true);
+      }
+  
+      setCExhale(exhale);
+      setCTime(time);
+      setCalibratedLps(lps)
+      if(exhale && meaStart){
+        setShadow(lps);
+      }
     }
   },[dataList])
 
@@ -1847,7 +1866,7 @@ useEffect(()=>{
 
   const [saveMsg, setSaveMsg] = useState("");
   const alertRef = useRef();
-  const selectSave = (val)=>{
+  const selectSave = async (val)=>{
     if(!limit){
       if(val == "confirm"){
         setSaveMsg("검사 저장이 완료되었습니다.\n추가로 검사를 진행하고 싶다면 검사 시작 버튼을 눌러주세요.");
@@ -1862,7 +1881,7 @@ useEffect(()=>{
         alertRef.current.classList.remove("visible");
       }, 2000);
     }
-    measureFin();
+    await measureFin();
   }
 
   
