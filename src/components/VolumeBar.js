@@ -7,7 +7,7 @@ let Volume = styled.div`
   width: ${props=>props.width}%;
   height: 100%;
   border-radius: 50vh;
-  background-color: rgb(77, 174, 226);
+  background: linear-gradient(90deg, rgba(188,240,227,1) 0%, rgba(1,138,190,1) 100%);
 `;
 
 function VolumeBar(props) {
