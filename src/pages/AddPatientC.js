@@ -102,7 +102,7 @@ const AddPatientCopy = ()=>{
     }
     let date = new Date();
     if(!err){
-      navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`});
+      navigator("/memberList/measureInfo", {state: {chartNumber : examinee.chartNumber, name:examinee.name}, date:`${date.getFullYear}-${(date.getMonth+1).toString().padStart(2, '0')}-${(date.getDay).toString().padStart(2, '0')}`, birth: examinee.birthday});
     }
   }
   const location = useLocation();

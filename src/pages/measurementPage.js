@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux"
 import Timer from "../components/Timer.js"
 import VolumeBar from "../components/VolumeBar.js"
 import Alert from "../components/Alerts.js"
+import styled from "styled-components";
 
 var maxY = 2;
 var minY = -1;
@@ -30,6 +31,7 @@ const MeasurementPage = () =>{
   let date = location.state.date;
   let type = location.state.type;
   let chartNumber = location.state.chartNumber;
+  let birth = location.state.birth;
 
   // const cookies = new Cookies();?
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
@@ -428,6 +430,7 @@ useEffect(()=>
 
   // 게이지 UI 전처리
   let setGaugeUI = (strongTime, stopTime)=>{
+    console.log(strongTime);
     switch (parseInt(strongTime)) {
       case 3:
         itemRef.current[30].classList += " endColor";
@@ -570,6 +573,7 @@ useEffect(()=>
     for (let i = 1; i < 61; i++) {
       if(itemRef.current[i].classList.contains("tickColor")){
         itemRef.current[i].classList.remove("tickColor");
+        itemRef.current[i].style.background = '';
       }
       else{
       }
@@ -792,7 +796,7 @@ useEffect(()=>
   // 검사 시작 상태
   const [meaStart, setMeaStart] = useState(false);
   // 데이터 리스트
-  const [dataList, setDataList] = useState([]); 
+  const [dataList, setDataList] = useState([]);
   // 검사시작 flag, 이 이후로 realData
   const [flag, setFlag] = useState(-1)
 
@@ -865,6 +869,7 @@ useEffect(()=>{
   useEffect(()=>{
     if(notifyDone){
       setReadyAlert(true);
+      setBlow(true);
     }
   },[notifyDone])
   useEffect(()=>{
@@ -888,22 +893,23 @@ useEffect(()=>{
 
   useEffect(()=>{
     if(!blowF){
-      if(dataList[0] == 0){
+      // if(dataList[0] == 0){
+      // }
+      if(dataList[0] == 0 && dataList.length == 1){
         setNotifyDone(true);
-      }
-      if(dataList[0] == 0 && dataList[1] == 0 && dataList[2] == 0){
         setBlow(true);
       }
-      if(blow==true){ //  입김 불면!
-        // console.log(dataList[dataList.length-1].slice(0,1))
-        // if(dataList[dataList.length-1].slice(0,1) == "0"){
-        if(dataList[dataList.length-1] == "0"){
-          //css 변화로 검사 활성화
-          if(secondBtnRef.current.classList.contains("disabled")){
-            secondBtnRef.current.classList.remove("disabled");
-          }
+      // console.log(dataList[dataList.length-1].slice(0,1))
+      // if(dataList[dataList.length-1].slice(0,1) == "0"){
+      
+      if(dataList.length > 1  && String(dataList[dataList.length-1]).padStart(9,'0').slice(0) !== "0"){
+        //css 변화로 검사 활성화
+        if(secondBtnRef.current.classList.contains("disabled")){
+          secondBtnRef.current.classList.remove("disabled");
         }
       }
+      // if(blow==true){ //  입김 불면!
+      // }
     }
   },[dataList])
 //-----------------------------------------------------------------------------------------------
@@ -916,6 +922,7 @@ useEffect(()=>{
     volumFlowMaxX = 0;
     if(meaStart){
       setDataList([0,0]);
+      removeTick();
       setRunTime(0);
       let time = setTimeout(() => {
         if(firstBtnRef.current.classList.contains("disabled"))firstBtnRef.current.classList.remove("disabled"); // 재측정 버튼 활성화
@@ -996,6 +1003,9 @@ useEffect(()=>{
     setCExhale(exhale);
     setCTime(time);
     setCalibratedLps(lps)
+    if(exhale && meaStart){
+      setShadow(lps);
+    }
   },[dataList])
 
   useEffect(()=>{
@@ -1014,10 +1024,11 @@ useEffect(()=>{
   },[cVolume])
 
 //-----------------------------------------------------------------------------------------------
-
+  const [readyMeasureDone, setReadyMeasureDone] = useState(false);
   // volume-flow 그래프 좌표 함수
   let setVFGraphData = ( rawV, rawF )=>{
     try{
+      if(measureDone)return;
       let x, y;
       let preXY; //이전값
       // preXY 값 할당
@@ -1060,11 +1071,15 @@ useEffect(()=>{
           }
         }
         if(timerReady && timerStart && !measureDone){
-          if(volumeFlowList[calFlag] && volumeFlowList[calFlag]["y"] < 0){
+          setTimerStart(false);
+          setReadyMeasureDone(true);
+          // if(readyMeasureDone){
             // setFlagTo({...flagTo, to: flagTo.from+calFlag});
-            setTimerStart(false);
-            setMeasureDone(true);
-          }
+          // }
+        }
+        if(readyMeasureDone && volumeFlowList[calFlag] && volumeFlowList[calFlag]["y"] == 0){
+          setMeasureDone(true);
+          setReadyMeasureDone(false);
         }
       }
       //호기 시
@@ -1078,9 +1093,14 @@ useEffect(()=>{
           if(rawF == 0 && runTime>300){
             // setFlagTo({...flagTo, to: flagTo.from+calFlag});
             setTimerStart(false);
-            setMeasureDone(true);
+            setReadyMeasureDone(true);
+            // setMeasureDone(true);
             // return;
           }
+        }
+        if(readyMeasureDone){
+          setMeasureDone(true);
+          setReadyMeasureDone(false);
         }
       }
       // fvc volumFlowList min
@@ -1685,11 +1705,37 @@ useEffect(()=>{
   // 런타임 중 틱 인덱스 설정
   useEffect(()=>{
     console.log(parseInt(runTime/timerTick));
+    console.log(parseInt(runTime));
     if(runTime != 0){
       setTickColorIdx(parseInt(runTime/timerTick));
     }
+    if(runTime > parseInt(strongTime*1000) && !tickOn){
+      setTickColor(1);
+      setTickOn(true);
+    }
   },[runTime])
-
+  const [tickColor, setTickColor] = useState(0);
+  const [tickOn, setTickOn] = useState(false);
+  useEffect(()=>{
+    if(tickOn){
+      if(tickColor ==1){
+        let time = setTimeout(() => {
+          setTickColor(0);
+        }, 300);
+        return ()=>{
+          clearTimeout(time)
+        }
+      }
+      else{
+        let time = setTimeout(() => {
+          setTickColor(1);
+        }, 300);
+        return ()=>{
+          clearTimeout(time)
+        }
+      }
+    }
+  },[tickColor])
   // 틱 인덱스 설정 시 틱 색깔 설정
   useEffect(()=>{
     if(tickColorIdx > 0 && tickColorIdx <= 59){
@@ -1760,7 +1806,7 @@ useEffect(()=>{
     }
   },[saveReady])
 
-  const measureFin = ()=>{
+  const measureFin = async()=>{
     let time = setTimeout(() => {
       removeTick()
       setInF(-1);
@@ -1774,6 +1820,12 @@ useEffect(()=>{
       setTimerReady(false);
       setRunTime(0);
       setMeasureDone(false);
+      setTickColor(0);
+      setTickOn(false);
+      let ticks = document.getElementsByClassName('tickColor');
+      Array.prototype.map.call(ticks,it=>{
+        it.style.background=`#f7f7f7`;
+      })
       // setFlagTo({from:1, to:""});
       setTrigger(-1)
       firstBtnRef.current.classList+=" disabled";
@@ -1807,6 +1859,8 @@ useEffect(()=>{
     }
     measureFin();
   }
+
+  
 
 
 //-----------------------------------------------------------------------------------------------
@@ -1851,6 +1905,115 @@ useEffect(()=>{
   useEffect(()=>{
     console.log(limit)
   },[limit])
+
+
+  const [shadow, setShadow] = useState(0);
+  
+  let VolumeShadow = styled.div`
+    width: 33vh;
+    height: 33vh;
+    border-radius: 100vh;
+    box-shadow: 0 0 2px ${props=> props.shadow*1.2>=15?15:props.shadow*1.2 }px #c6f1ff;
+    position: absolute;
+  `;
+
+  let tickColorList = ['#5fc6d3', '#f00'];
+
+  let ticks = document.getElementsByClassName('tickColor');
+  Array.prototype.map.call(ticks,it=>{
+    it.style.background=`${tickColorList[tickColor]}`;
+  })
+  
+
+  const [finishAlertStat, setFinishAlertStat] = useState(false);
+  
+  let finishConfirmFunc = (val)=>{
+    if(val=="confirm"){
+      click(chartNumber, birth);
+    }
+    else if(val=="cancel"){
+      setFinishAlertStat(false);
+    }
+  }
+  const click = (chartNumber, birth) =>{
+    axios.get(`/subjects/${chartNumber}/histories` , {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }).then((res)=>{
+      report(res.data.response, chartNumber);
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }
+  const [date1, setDate1] = useState([]);
+  const [goTO, setGoTO] = useState(false)
+  const [data0, setData0] = useState([]);
+  const [data1, setData1] = useState([]);
+  const [data2, setData2] = useState([]);
+  const report = async(date,chartNum)=>{
+    await axios.get(`/subjects/${chartNum}`,{
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }).then((res)=>{
+      console.log(res);
+      if(res.data.subCode === 2004){
+        setData0(res.data.message);
+      }
+      else setData0(res.data.response);
+    })
+
+    await axios.get(`/v3/subjects/${chartNum}/types/fvc/results/${date[0]}` , {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }).then((res)=>{
+      console.log(res);
+      if(res.data.subCode === 2004){
+        setData1(res.data.message);
+      }
+      else setData1(res.data.response);
+    }).catch((err)=>{
+      console.log(err);
+    })
+    await axios.get(`/subjects/${chartNum}/histories`
+    , {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+    }}).then((res)=>{
+      console.log(res.data.response);
+      setDate1(res.data.response);
+    }).catch((err)=>{
+      console.log(err);
+    })
+    await axios.get(`/v3/subjects/${chartNum}/types/svc/results/${date[0]}` , {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }).then((res)=>{
+      console.log(res);
+      if(res.data.subCode === 2004){
+        setData2(res.data.message);
+      }
+      else setData2(res.data.response);
+    }).catch((err)=>{
+      console.log(err);
+    })
+    setGoTO(true);
+  }
+  useEffect(()=>{
+    if(goTO){
+      console.log(chartNumber);
+      console.log(data0);
+      console.log(data1);
+      console.log(data2);
+      console.log(date);
+      navigatorR('/memberList/resultPage', {state: {info:data0, fvc:data1, svc:data2, date:date1, birth:birth, chartNumber:chartNumber}});
+    }
+    else{}
+  },[goTO])
+
   return(
     <div className="measurement-page-container">
       {<Alert inputRef={alertRef} contents={"검사 저장에 실패했습니다.\n폐기능 검사는 하루 최대 8회 까지만 검사할 수 있습니다.."}/>}
@@ -1860,11 +2023,12 @@ useEffect(()=>{
       {disconnectStat ? <Confirm content={"연결된 Spirokit기기가 없습니다.\n설정 페이지로 이동해서 Spirokit을 연결해주세요."} btn={true} onOff={setDisconnectStat} select={disconnectConfirmFunc}/> : null}
       {backStat ? <Confirm content={"환자선택 화면으로 돌아가시겠습니까?"} btn={true} onOff={setBackStat} select={backConfirmFunc}/> : null}
       {readyAlert ? <Confirm content={"SpiroKit 동작 준비 중 입니다.\n잠시만 기다려주세요."} btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
+      {finishAlertStat ? <Confirm content={"모든 검사를 종료하고, 검사 결과페이지로 이동하시겠습니까?"} btn={true} onOff={setFinishAlertStat} select={finishConfirmFunc}/> : null}
         <div className="measurement-page-nav">
           <div className='measurement-page-backBtn' onClick={()=>{setBackStat(true)}}>
             <FaChevronLeft style={{color: "#4b75d6",}}/>
           </div>
-          <p>{location.state.name}</p>
+          <p onClick={()=>{console.log(dataList)}}>{location.state.name}</p>
           <div className='graph-status-container'>
             <div className='error'>
                   <span>Error Code </span>
@@ -1894,67 +2058,68 @@ useEffect(()=>{
       
         <div className="measurement-page-left-container">
           <div className="measure-gauge-container">
+              <VolumeShadow shadow={shadow}/>
               <div className="gauge-container">
-                <div className="gaugeItem" ref={el=>itemRef.current[1]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[2]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[3]=el} ><p></p></div>       
-                <div className="gaugeItem" ref={el=>itemRef.current[4]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[5]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[6]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[7]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[8]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[9]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[10]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[11]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[12]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[13]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[14]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[15]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[16]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[17]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[18]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[19]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[20]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[21]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[22]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[23]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[24]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[25]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[26]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[27]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[28]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[29]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[30]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[31]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[32]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[33]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[34]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[35]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[36]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[37]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[38]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[39]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[40]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[41]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[42]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[43]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[44]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[45]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[46]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[47]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[48]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[49]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[50]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[51]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[52]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[53]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[54]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[55]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[56]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[57]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[58]=el} ><p></p></div>
-                <div className="gaugeItem" ref={el=>itemRef.current[59]=el} ><p></p></div>
-                <div className='gaugeItem startColor' ref={el=>itemRef.current[60]=el} ><p></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[1]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[2]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[3]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[4]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[5]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[6]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[7]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[8]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[9]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[10]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[11]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[12]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[13]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[14]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[15]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[16]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[17]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[18]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[19]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[20]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[21]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[22]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[23]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[24]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[25]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[26]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[27]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[28]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[29]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[30]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[31]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[32]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[33]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[34]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[35]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[36]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[37]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[38]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[39]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[40]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[41]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[42]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[43]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[44]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[45]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[46]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[47]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[48]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[49]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[50]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[51]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[52]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[53]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[54]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[55]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[56]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[57]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[58]=el} ></p></div>
+                <div className="gaugeItem" ><p ref={el=>itemRef.current[59]=el} ></p></div>
+                <div className='gaugeItem'><p className='startColor' ref={el=>itemRef.current[60]=el}></p></div>
                 <div className='gauge-status'>
                   {
                     inFDone?
@@ -1979,7 +2144,7 @@ useEffect(()=>{
             blowF?
               meaStart?
                 inF == -1 ?
-                  <p className='measure-msg'>{"편하게 호흡을 시작해주세요."}</p>
+                  <p className='measure-msg'>{"검사가 시작되었습니다. 편하게 호흡을 시작해주세요."}</p>
                 :
                   <>
                     {
@@ -2001,8 +2166,8 @@ useEffect(()=>{
               :
               saveMsg ? <p className='measure-msg'>{saveMsg}</p> : <p className='measure-msg'>{"바람을 불어서 활성화해주세요."}</p>
             :
-              blow?
-              <p className='measure-msg'>{noneDevice==false?"SpiroKit 연동이 완료되었습니다.\nSpiroKit 동작버튼을 켜주시고, 마우스피스 입구에 살짝 입김을 불어 검사 시작 버튼을 활성화 해주세요.":"SpiroKit 연동이 필요합니다."}</p>
+              noneDevice==false?
+              <p className='measure-msg'>{"SpiroKit 연동이 완료되었습니다.\nSpiroKit 동작버튼을 켜주시고, 마우스피스 입구에 살짝 입김을 불어 검사 시작 버튼을 활성화 해주세요."}</p>
               :
               <p className='measure-msg'>{"SpiroKit 연동이 필요합니다."}</p>
             }
@@ -2065,7 +2230,7 @@ useEffect(()=>{
               <div>
                 {
                   meaStart ? 
-                    calibratedLps ? <VolumeBar width={calibratedLps/3*100}/> : <VolumeBar width={0}/>
+                    calibratedLps ? <VolumeBar width={calibratedLps*20}/> : <VolumeBar width={0}/>
                     : <VolumeBar width={0}/>
                 }
               </div>
@@ -2101,6 +2266,7 @@ useEffect(()=>{
             <div ref={thirdBtnRef} onClick={()=>{
               // console.log(flagTo);
               // console.log(dataList.slice(flagTo.from, flagTo.to+1).toString().replaceAll(","," "));
+              setFinishAlertStat(true);
             }}><p>검사 종료</p></div>
           </div>
 

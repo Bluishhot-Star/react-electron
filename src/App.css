@@ -3643,7 +3643,7 @@ text-align: right;
   border:  rgba(1, 138, 190, 1) 2px solid;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr 0.3fr 0.7fr;
+  grid-template-rows: 1.5fr 0.3fr 0.3fr;
   padding: 10px;
   overflow: hidden;
   justify-content: center;
@@ -3672,7 +3672,7 @@ text-align: right;
 }
 .measure-msg-picture img{
   height: 100%;
-  width: 80%;
+  width: 70%;
   max-width: 350px;
 }
 .measure-msg-container .measure-msg{
@@ -4160,49 +4160,77 @@ text-align: right;
   color: rgba(1, 138, 190, 1);
 }
 
+.guage-background{
+  width: 33vh;
+  height: 33vh;
+  border-radius: 100vh;
+  position: absolute;
+  background: #000;
+}
+
 .gauge-container{
   width: 33vh;
   height: 33vh;
   /* width: 150px;
   height: 150px; */
   /* background: #efefef; */
-  border: 1px solid #afafaf;
+  /* border: 1px solid #afafaf; */
+
   position: relative;
   border-radius: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .gauge-container p{
   display: inline-block;
   width: 0.75vh;
-  height: 5vh;
-  background: #aaa;
+  height: 3.5vh;
+  background: #f7f7f7;
 }
 .gauge-status p{
   all: unset;
-  font-size: 7vh;
+  font-size: 3.5vh;
+  color: #e3eff5;
+  font-weight: 500;
 }
 .gauge-status-content{
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.gauge-status-content>p:first-child{
-  font-size: 6vh;
+.gauge-status-content>div:first-child{
+  font-size: 3.5vh;
 }
 .gauge-status-content>p:nth-child(2){
-  font-size: 6.5vh;
+  font-size: 3.5vh;
+  color: rgba(1, 138, 190, 1);
 }
-.startColor > p{
-  background: rgb(112, 171, 189);
+.gauge-container .startColor{
+  background: #60c7d6;
 }
-.tickColor > p{
-  background: rgba(93, 188, 206, 1);
+.gauge-container .tickColor.onOff{
+  animation: onOff .6s;
+  animation-iteration-count: infinite;
 }
-.endColor > p{
-  background: rgba(1, 138, 190, 1);
+.gauge-container .tickColor{
+  background: #5fc6d3;
 }
+.gauge-container .endColor{
+  background: #0093ce;
+}
+
+@keyframes onOff {
+  from {
+    background: #f7f7f7;
+  }
+  to { 
+    background: #f00;
+  }
+}
+
+
 
 /* 검사 설정 */
 
@@ -4630,24 +4658,28 @@ text-align: right;
 /* Timer */
 .timer-container{
   display: flex;
-  font-size: 6vh;
+  font-size: 3.5vh;
   align-items: end;
 }
 .timer-container p{
   all: unset;
+  color: #018abe;
 }
 .timer-container .timer-second{
   display: block;
-  transform: translate(0, -0.65vh);
+  /* transform: translate(0, -0.65vh); */
 }
 
 .timer-container .timer-millisecond{
   display: block;
-  font-size: 4.5vh;
-  width: 2.65vh;
-  transform: translate(0.5vh, -0.75vh);
+  /* font-size: 3.5vh; */
+  width: 1.85vh;
+  color: #000;
+  /* transform: translate(0.5vh, -0.75vh); */
 }
-
+.timer-container .timer-millisecond:nth-child(3){
+  margin-left: 5px;
+}
 /* 보정 정보 */
 .gain-info-page-container{
   width: 100%;
