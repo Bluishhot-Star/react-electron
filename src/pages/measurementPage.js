@@ -1628,7 +1628,7 @@ useEffect(()=>{
       datasets: [{
         label: "",
             data: volumeFlowList,
-            borderColor: `red`,
+            borderColor: `rgba(1, 138, 190, 1)`,
             borderWidth: 2.5,
             showLine: true,
             tension: 0.4
@@ -1644,7 +1644,7 @@ useEffect(()=>{
       datasets: [{
         label: "",
             data: [],
-            borderColor: `red`,
+            borderColor: `rgba(1, 138, 190, 1)`,
             borderWidth: 2.5,
             showLine: true,
             tension: 0.4
@@ -1670,7 +1670,7 @@ useEffect(()=>{
       datasets: [{
         label: "",
             data: timeVolumeList,
-            borderColor: `red`,
+            borderColor: `rgba(1, 138, 190, 1)`,
             borderWidth: 2.5,
             showLine: true,
             tension: 0.4
