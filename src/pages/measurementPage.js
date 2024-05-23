@@ -1004,7 +1004,7 @@ useEffect(()=>{
   const [cVolume, setCVolume] = useState(-999);
   const [cExhale, setCExhale] = useState();
   useEffect(()=>{
-    if(meaStart){
+    if(meaStart && !measureDone){
       let previous = dataList[dataList.length-2];
       let current = dataList[dataList.length-1];
       let time = dataCalculateStrategyE.getTime(current);
@@ -1195,6 +1195,7 @@ useEffect(()=>{
   const [calFlagTV,setCalFlagTV] = useState(0);
   // timeVolume 그래프 좌표 생성 함수
   let setTVGraphData = (rawT, rawV, exhale)=>{
+    if(measureDone)return;
     let x, y;
     let preXY;
     let prefix = 1;
@@ -1815,6 +1816,7 @@ useEffect(()=>{
   useEffect(()=>{
     if(measureDone){
       setSaveReady(true);
+      setMeaStart(false);
     }
   },[measureDone])
 
