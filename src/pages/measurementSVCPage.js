@@ -58,6 +58,8 @@ const MeasurementSVCPage = () =>{
     console.log(location.state)
     console.log(location.state.data)
     setTotalData(location.state.data);
+    setSvcMax(1);
+
   },[])
 
 
@@ -108,23 +110,19 @@ const MeasurementSVCPage = () =>{
       //svc의 심플카드
       let trials = totalData.trials;
       let svcGraphList = [];
-      let svcMaxList = [];
-
       if(trials){
         console.log(trials.length);
         let temp = new Array(trials.length).fill(0);
         setSvcGraphOnOff(temp);
         // 매 결과에서 데이터 추출
-        trials.forEach((item)=>{
-          svcGraphList.push(item.graph.timeVolume);
+        if(svcGraph !== null){
 
-          //현 svc 최대값 찾기
-          svcMaxList.push(parseInt(item.results[0].meas));
+        }
+        trials.forEach((item)=>{
+          svcGraphList.push(item.graph.timeVolume); 
         })
-        console.log(svcGraphList);
         setSvcGraph([]);
         setAllSvcGraph(svcGraphList);
-        setSvcMax(svcMaxList);
         setSvcTrigger(0);
       }
     }
@@ -151,6 +149,7 @@ const MeasurementSVCPage = () =>{
       setSvcTrigger(svcTrigger+1);
     }
     setSvcGraphOnOff(temp);
+    console.log(temp)
   }
   useEffect(()=>{
     /** 
@@ -187,6 +186,23 @@ const MeasurementSVCPage = () =>{
         temp[index] = allSvcGraph[index];
       }
     })
+    //그래프 비율
+    let svcMaxList = [];
+    let max = 1;
+
+    if(allSvcGraph.length !== 0){
+      allSvcGraph.forEach((item)=>{
+        if(item.y === undefined){
+          item.forEach((gItem)=>{
+            svcMaxList.push(gItem.y);
+          })
+        }
+      })
+      max = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
+      console.log(max);
+      setSvcMax(max+1);
+    }
+    
     setSvcGraph(temp);
     console.log(temp);
 
@@ -238,6 +254,28 @@ const MeasurementSVCPage = () =>{
   {
     console.log("!#!##")
 
+    let svcMaxList = [];
+    let max = 1;
+    console.log(111)
+
+    if(svcGraph.length !== 0){
+    console.log(222)
+
+      console.log(svcGraph)
+      svcGraph.forEach((item)=>{
+        if(item.y === undefined){
+          item.forEach((gItem)=>{
+            svcMaxList.push(gItem.y);
+          })
+        }
+      })
+      max = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
+      console.log(max);
+      setSvcMax(max+1);
+    }else{
+      setSvcMax(1);
+    }
+    
     let time = setTimeout(()=>{
       console.log("!#!##!@!@")
       
@@ -999,7 +1037,19 @@ useEffect(()=>{
 
     }
     timeVolumeList.push({x:x, y:y});
-
+    let svcMaxList = [];
+    let max = 1;
+    if(timeVolumeList.length !== 0){
+      console.log(svcGraph)
+      timeVolumeList.forEach((item)=>{
+        svcMaxList.push(item.y);
+      })
+      max = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
+    }
+    console.log(max);
+    setSvcMax(max+1);
+    setSvcGraph(temp);
+    console.log(temp);
     setSvcGraph(timeVolumeList);
     setCalFlagTV(calFlagTV+1);
   }
@@ -1024,7 +1074,7 @@ useEffect(()=>{
       y = timeVolumeList[calFlagTV-1].y + (rawV)
     }
     timeVolumeList.push({x:x, y:y});
-
+    
     setSvcGraph(timeVolumeList);
     setCalFlagTV(calFlagTV+1);
   }
@@ -1152,8 +1202,8 @@ useEffect(()=>{
     scales: {
       x: {
         axios: 'x',
-        // min: 0,
-        suggestedMax: 60.0,
+        min: 0,
+        max: 60.0,
         // suggestedMax: 6.0,
         ticks:{
           stepSize : 10.0,
@@ -1177,14 +1227,19 @@ useEffect(()=>{
           zeroLineColor:'rgba(0, 0, 255, 1)',
         },
         axios: 'y',
-        max: parseFloat(Math.max(...svcMax)),
-        min: parseFloat(Math.max(...svcMax))*-1,
+        max: parseFloat(svcMax),
+        min: parseFloat(svcMax)*-1,
         // suggestedMax:0,
         // suggestedMin:-6,
         ticks: {
           major: true,
           beginAtZero: true,
-          // stepSize : .5,
+          stepSize:(context)=>{
+            if(context.scale.min === -1){
+              return 0.5;
+            }
+            return;
+          },
           fontSize : 10,
           textStrokeColor: 10,
           precision: 1,
