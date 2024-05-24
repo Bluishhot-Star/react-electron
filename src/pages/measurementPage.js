@@ -962,7 +962,7 @@ useEffect(()=>{
   
 //-----------------------------------------------------------------------------------------------
 
-  const [rawDataList, setRawDataList] = useState([0]); // raw data 처리 전 (0만 뗀거)
+
   // const [flagTo, setFlagTo] = useState(0); // rawDataList에서 잘라서 post
   const [calDataList, setCalDataList] = useState([]); // raw data 처리 -> time/volume/lps/exhale
   const [calFlag, setCalFlag] = useState(-1); // calDataList에서 그래프 좌표로 처리할 index=>현재 처리된 index
