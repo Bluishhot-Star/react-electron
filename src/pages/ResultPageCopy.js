@@ -308,6 +308,21 @@ useEffect(()=>{
         temp[index] = allSvcGraph[index];
       }
     })
+    let svcMaxList = [];
+    let max = 1;
+
+    if(allSvcGraph.length !== 0){
+      allSvcGraph.forEach((item)=>{
+        if(item.y === undefined){
+          item.forEach((gItem)=>{
+            svcMaxList.push(gItem.y);
+          })
+        }
+      })
+      max = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
+      console.log(max);
+      setSvcMax(max+1);
+    }
     setSvcGraph(temp);
   },[svcTrigger])
 
@@ -315,7 +330,6 @@ useEffect(()=>{
     //svc의 심플카드
     let svcTrials = totalData.svc.trials;
     let svcGraphList = [];
-    let svcMaxList = [];
 
     if(svcTrials){
       let temp = new Array(svcTrials.length).fill(0);
@@ -323,13 +337,9 @@ useEffect(()=>{
       // 매 결과에서 데이터 추출
       svcTrials.forEach((item)=>{
         svcGraphList.push(item.graph.timeVolume);
-
-        //현 svc 최대값 찾기
-        svcMaxList.push(parseFloat(item.results[0].meas)+3);
       })
       setSvcGraph(svcGraphList);
       setAllSvcGraph(svcGraphList);
-      setSvcMax(svcMaxList);
       setSvcTrigger(0);
     }
   },[totalData])
@@ -578,7 +588,7 @@ useEffect(()=>{
     scales: {
       x: {
         axios: 'x',
-        // min: 0,
+        min: 0,
         suggestedMax: 60.0,
         // suggestedMax: 6.0,
         ticks:{
@@ -603,8 +613,8 @@ useEffect(()=>{
           zeroLineColor:'rgba(0, 0, 255, 1)',
         },
         axios: 'y',
-        max: parseFloat(Math.max(...svcMax)),
-        min: parseFloat(Math.max(...svcMax))*-1,
+        max: parseFloat(svcMax),
+        min: parseFloat(svcMax)*-1,
         // suggestedMax:0,
         // suggestedMin:-6,
         ticks: {
@@ -793,9 +803,31 @@ useEffect(()=>{
   // svcGraph 그리기
   useEffect(()=>
   {
+    let svcMaxList = [];
+    let max = 1;
+    console.log(111)
+
+    if(svcGraph.length !== 0){
+    console.log(222)
+
+      console.log(svcGraph)
+      svcGraph.forEach((item)=>{
+        if(item.y === undefined){
+          item.forEach((gItem)=>{
+            svcMaxList.push(gItem.y);
+          })
+        }
+      })
+      max = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
+      console.log(max);
+      setSvcMax(max+1);
+    }else{
+      setSvcMax(1);
+    }
     let time = setTimeout(()=>{
       let time2 = setTimeout(() => {
         let dataset = []
+        
         svcGraph.forEach((item,index)=>{
           dataset.push(
             {
