@@ -958,50 +958,55 @@ useEffect(()=>{
 
   // timeVolume 그래프 좌표 생성 함수
   let setTVGraphData = (rawT, rawV, exhale)=>{
-    if(measureDone)return;
-    let x, y;
-    let preXY;
-    let prefix = 1;
-
-    if (timeVolumeList.length==0){
-      x = 0;
-      y = 0;
+    try{
+      if(measureDone)return;
+      let x, y;
+      let preXY;
+      let prefix = 1;
+  
+      if (timeVolumeList.length==0){
+        x = 0;
+        y = 0;
+      }
+      else{
+        if(!inFDone && meaStart && rawV!==0){ //첫 입력에 따른 세션
+          if(!exhale){ //흡기선?
+            setInF(true);
+            setInFDone(true);
+          }
+          else{ //호기선?
+            setInF(false);
+            setInFDone(true);
+          }
+        }
+        // if (exhale !== calDataList[calFlag-1].exhale){
+  
+        // }
+        if (exhale){
+          prefix = -1;
+        }
+        else{ 
+          prefix = 1;
+  
+          //타이머 종료 (강 호기 끝내고)
+          if(timerReady && timerStart && !measureDone){
+            setTimerStart(false);
+            setMeasureLast(true);
+          }
+        }
+        console.log(`prefix: ${prefix}, rawV: ${rawV} exhale: ${exhale}`)
+        x = rawT+timeVolumeList[calFlagTV-1].x;
+        y = timeVolumeList[calFlagTV-1].y + (prefix * rawV)
+  
+      }
+      timeVolumeList.push({x:x, y:y});
+  
+      setSvcGraph(timeVolumeList);
+      setCalFlagTV(calFlagTV+1);
     }
-    else{
-      if(!inFDone && meaStart && rawV!==0){ //첫 입력에 따른 세션
-        if(!exhale){ //흡기선?
-          setInF(true);
-          setInFDone(true);
-        }
-        else{ //호기선?
-          setInF(false);
-          setInFDone(true);
-        }
-      }
-      if (exhale !== calDataList[calFlag-1].exhale){
-
-      }
-      if (exhale){
-        prefix = -1;
-      }
-      else{ 
-        prefix = 1;
-
-        //타이머 종료 (강 호기 끝내고)
-        if(timerReady && timerStart && !measureDone){
-          setTimerStart(false);
-          setMeasureLast(true);
-        }
-      }
-      console.log(`prefix: ${prefix}, rawV: ${rawV} exhale: ${exhale}`)
-      x = rawT+timeVolumeList[calFlagTV-1].x;
-      y = timeVolumeList[calFlagTV-1].y + (prefix * rawV)
-
+    catch(e){
+      
     }
-    timeVolumeList.push({x:x, y:y});
-
-    setSvcGraph(timeVolumeList);
-    setCalFlagTV(calFlagTV+1);
   }
   
   // 마지막 세션 (호기)
