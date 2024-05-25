@@ -1054,27 +1054,27 @@ useEffect(()=>{
       }
       timeVolumeList.push({x:x, y:y});
       let svcMaxList = [];
-    let max = 1;
-    let min = 1;
-    let setRatio = 1;
-    if(timeVolumeList.length !== 0){
-      console.log(svcGraph)
-      timeVolumeList.forEach((item)=>{
-        svcMaxList.push(item.y);
-      })
-      min = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
-      max = Math.abs(Math.ceil(Math.max.apply(null,svcMaxList)));
-      setRatio = max >= min ? max : min;
-      setRatio = setRatio < 1 || setRatio === Infinity ? 1 : setRatio
-      console.log(max);
-      console.log("setRatio3 : " +setRatio)
-      setSvcMax(setRatio);
-    }else{
-      setSvcMax(1);
-    }
-    
-    setSvcGraph(temp);
-    console.log(temp);
+      let max = 1;
+      let min = 1;
+      let setRatio = 1;
+      if(timeVolumeList.length !== 0){
+        console.log(svcGraph)
+        timeVolumeList.forEach((item)=>{
+          svcMaxList.push(item.y);
+        })
+        min = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
+        max = Math.abs(Math.ceil(Math.max.apply(null,svcMaxList)));
+        setRatio = max >= min ? max : min;
+        setRatio = setRatio < 1 || setRatio === Infinity ? 1 : setRatio
+        console.log(max);
+        console.log("setRatio3 : " +setRatio)
+        setSvcMax(setRatio);
+      }else{
+        setSvcMax(1);
+      }
+      
+      setSvcGraph(temp);
+      console.log(temp);
       setSvcGraph(timeVolumeList);
       setCalFlagTV(calFlagTV+1);
     }

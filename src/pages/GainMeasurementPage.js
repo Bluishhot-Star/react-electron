@@ -13,6 +13,13 @@ import {registerables,Chart as ChartJS,RadialLinearScale,LineElement,Tooltip,Leg
 import { Scatter } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { useSelector } from "react-redux"
+
+var maxY = 2;
+var minY = -1;
+var maxX = 6;
+var volumFlowMin = -1;
+var volumFlowMaxX = 6;
+
 const GainMeasurementPage = () =>{
   ChartJS.register(RadialLinearScale, LineElement, Tooltip, Legend, ...registerables,annotationPlugin);
   const [accessToken,setAccessToken] = useState(window.api.get("get-cookies",'accessToken'));
@@ -308,7 +315,6 @@ const GainMeasurementPage = () =>{
   const exhaleCoefficient = 1.0581318835872322; // 호기 계수
 
 
-  const [dataResult, setDataResult] = useState([]);
   // 기기 없음 메세지
   const [noneDevice, setNoneDevice] = useState(false);
   // 시작확인 메세지
@@ -320,7 +326,7 @@ const GainMeasurementPage = () =>{
   // 검사버튼 먼저 누르고 온 경우 notify 확인 후 구독 완료
   const [alNotifyDone, setAlNotifyDone] = useState(false);
   // 검사 시작 전 준비완료 상태(구독완)
-  const [meaPreStart, setMeaPreStart] = useState(false);
+  // const [meaPreStart, setMeaPreStart] = useState(false);
 
   // 검사 활성화위한 호기 감지
   const [blow, setBlow] = useState(false);
@@ -332,7 +338,7 @@ const GainMeasurementPage = () =>{
   // 데이터 리스트
   const [dataList, setDataList] = useState([]);
   // real데이터 리스트
-  const [realDataList, setRealDataList] = useState([]);
+  // const [realDataList, setRealDataList] = useState([]);
   // 검사시작 flag, 이 이후로 realData
   const [flag, setFlag] = useState(-1)
 
@@ -364,15 +370,11 @@ const GainMeasurementPage = () =>{
     else{ //기기없으면
       setNoneDevice(true);
       setDisconnectStat(true);
+      setDisconnectConfirm(true); // 팝업창 한번만 나오도록
+
     }
   })
   
-  //기기 없음 메세지 띄우기
-  useEffect(()=>{
-    if(noneDevice){
-      console.log("기기없음 메세지")
-    }
-  },[noneDevice])
 //----------------------------------------------------------------------------------------------- 222222
   
   // 연결 확인 & 구독 시작
@@ -380,9 +382,6 @@ const GainMeasurementPage = () =>{
 
     if(notifyStart){
       console.log("연결확인 및 구독")
-      //  if(secondBtnRef.current.classList.contains("disabled")){
-      //   secondBtnRef.current.classList.remove("disabled");
-      // }
       testIt()
     }
   },[notifyStart])
@@ -395,55 +394,51 @@ const GainMeasurementPage = () =>{
     if(notifyDone){
 
       setReadyAlert(true);
-      let time = setTimeout(() => {
-        setMeaPreStart(true);
-      }, 1000);
+      setBlow(true);
+      // let time = setTimeout(() => {
+      //   setMeaPreStart(true);
+      // }, 1000);
     }
   },[notifyDone])
   useEffect(()=>{
-    if(meaPreStart){ //구독 완료시
-      // setDataList([])
-
-    }
-    else{
-      
+    if(!blowF){ //구독 완료시
       firstBtnRef.current.classList += " disabled";
       secondBtnRef.current.classList += " disabled";
       thirdBtnRef.current.classList += " disabled";
       fourTBtnRef.current.classList += " disabled";
     }
-  },[meaPreStart])
+  },[blowF])
 
 //----------------------------------------------------------------------------------------------- 44444
   // 구독 완료 후 처리
 
   useEffect(()=>{
     if(alNotifyDone){
-      
-      console.log(dataList)
       if(dataList.length == 0){
-        console.log("aa")
         setBlow(true);
       }
     }
   },[alNotifyDone])
 
   useEffect(()=>{ 
-    console.log(dataList)
-    if(dataList[0] == '2'){
-      setNotifyDone(true);
-    }
-    if(dataList[0] == '2' && dataList[1] == '2' && dataList[2] == '2'){
-      setBlow(true);
-    }
-    if(blow==true&&blowF==false){
-      console.log(dataList[dataList.length-1].slice(0,1))
-      if(dataList[dataList.length-1].slice(0,1) == "0"){
+    if(!blowF){
+      // if(dataList[0] == 0){
+      // }
+      if(dataList[0] == 0 && dataList.length == 1){
+        setNotifyDone(true);
+        setBlow(true);
+      }
+      // console.log(dataList[dataList.length-1].slice(0,1))
+      // if(dataList[dataList.length-1].slice(0,1) == "0"){
+      
+      if(dataList.length > 1  && String(dataList[dataList.length-1]).padStart(9,'0').slice(0) !== "0"){
         //css 변화로 검사 활성화
         if(firstBtnRef.current.classList.contains("disabled")){
           firstBtnRef.current.classList.remove("disabled");
         }
       }
+      // if(blow==true){ //  입김 불면!
+      // }
     }
   },[dataList])
 
@@ -460,59 +455,39 @@ const GainMeasurementPage = () =>{
 //-----------------------------------------------------------------------------------------------
   // 시작 확인 시 flag 세우기 -> 처리할 데이터 슬라이싱
   useEffect(()=>{
+    maxY = 2;
+    minY = -1;
+    maxX = 6;
     if(meaStart){
-      
+      setInF(-1);
+      setDataList([0,0]);
+      setCalDataList([]);
+      // setCalFlagTV(1);
+      setCalFlag(1);
+
       let time = setTimeout(() => {
-        setFlag({idx: dataList.length, rIdx: 1}); // idx : dataList에서의 인덱스, rIdx : realData에서의 인덱스
+        setFlag({idx: 0, rIdx: 1}); // idx : dataList에서의 인덱스, rIdx : realData에서의 인덱스
       }, 1000);
+      return ()=>{
+        clearTimeout(time)
+      }
     }
   },[meaStart])
   
 //-----------------------------------------------------------------------------------------------
 
-  const [rawDataList, setRawDataList] = useState([0]); // raw data 처리 전 (0만 뗀거)
+  // const [rawDataList, setRawDataList] = useState([0]); // raw data 처리 전 (0만 뗀거)
   const [calDataList, setCalDataList] = useState([]); // raw data 처리 -> time/volume/lps/exhale
   const [calFlag, setCalFlag] = useState(0); // calDataList에서 그래프 좌표로 처리할 index=>현재 처리된 index
 
   // 그래프 좌표 생성 시작
   useEffect(()=>{
-    if(calDataList[calFlag] && meaStart){
+    if(meaStart && calDataList[calFlag]){
       let item = calDataList[calFlag];
       setVFGraphData(item.volume, item.lps);
-      //  setTVGraphData(item.time, item.volume, item.exhale);
-      setCalFlag(calFlag+1);
     }
-  },[flag, calDataList])
+  },[calDataList])
 
-  // raw데이터 들어오면 -> rawDataList에 넣기
-  useEffect(()=>{
-    if(flag.idx>0 && dataList[flag.idx]){
-
-      // let data = [...dataList.slice(parseInt(flag))];
-
-      let currItemR = dataList[flag.idx]; //현재 다룰 raw 데이터
-      let currItem = dataCalculateStrategyE.convert(currItemR); // 데이터 전처리 후
-      let preItem = rawDataList[flag.rIdx-1]; //그 이전 데이터
-
-
-      let TrawDataList = [...rawDataList];
-      
-      // 호 <-> 흡 바뀔 때 0 넣기 주석
-      // let currItemR = data[data.length-1]; //방금 들어온 raw 데이터
-      // let currItem = dataCalculateStrategyE.convert(currItemR); // 데이터 전처리 후
-      // if(dataCalculateStrategyE.isExhale(preItem) !== dataCalculateStrategyE.isExhale(currItem)){
-      //   TrawDataList.push(dataCalculateStrategyE.getZero(dataCalculateStrategyE.isExhale(currItem)));
-      // }
-
-      TrawDataList.push(currItem);
-      setRawDataList(TrawDataList);
-      setFlag({idx : flag.idx+1, rIdx: flag.rIdx+1})
-      
-      // console.log(123);
-      // setVolumeFlowList(setVFGraphData(item.volume, item.lps));
-    }
-
-  },[dataList, flag])
 
 
 //-----------------------------------------------------------------------------------------------
@@ -524,8 +499,8 @@ const GainMeasurementPage = () =>{
   const [cVolume, setCVolume] = useState(-999);
   const [cExhale, setCExhale] = useState();
   useEffect(()=>{
-    let previous = rawDataList[rawDataList.length-2];
-    let current = rawDataList[rawDataList.length-1];
+    let previous = dataList[dataList.length-2];
+    let current = dataList[dataList.length-1];
     let time = dataCalculateStrategyE.getTime(current);
     let lps = dataCalculateStrategyE.getCalibratedLPS(calibratedLps, previous, current, inhaleCoefficient, exhaleCoefficient);
     let exhale = dataCalculateStrategyE.isExhale(current);
@@ -535,6 +510,7 @@ const GainMeasurementPage = () =>{
       if(sessionVol !== 0 ){
         let tempSesCnt = sessionCount + 1
         setSessionCount(tempSesCnt); 
+        setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
       }
     }
     //  if(cExhale && timerReady && !timerStart && !measureDone){
@@ -544,7 +520,7 @@ const GainMeasurementPage = () =>{
     setCExhale(exhale);
     setCTime(time);
     setCalibratedLps(lps)
-  },[rawDataList])
+  },[dataList])
 
   useEffect(()=>{
     if(calibratedLps !== -10){
@@ -556,9 +532,8 @@ const GainMeasurementPage = () =>{
     if(cVolume !== -999){
       let metrics = new FluidMetrics(cTime, calibratedLps, cVolume);
       metrics.setExhale(cExhale);
-      calDataList.push(metrics);
-      setCalDataList(calDataList);
-
+      setCalDataList([...calDataList,metrics]);
+      if(calFlag == -1 && meaStart){setCalFlag(0)};
     }
   },[cVolume])
 
@@ -629,13 +604,6 @@ const resetChart = () => {
 
 
 //------------------------------------------------------------------------------------------------
-  // 시작 메세지 띄우기
-  useEffect(()=>{
-    if(blowF){
-      console.log("메세지 띄우려면")
-      setStartMsg(true);
-    }
-  },[blowF])
 
   //  useEffect(()=>{
   //    if(startMsg){
@@ -659,9 +627,10 @@ const resetChart = () => {
       //초기값 세팅
       if(volumeFlowList.length == 0){
         preXY = {x:0, y:0}
+        volumeFlowList.push({x:0, y:0});
       }
       else{
-        preXY = volumeFlowList[calFlag-1]
+        preXY = volumeFlowList[volumeFlowList.length-1]
       }
   
       // 흡기 시
@@ -678,13 +647,7 @@ const resetChart = () => {
 
         //x값 처리
         // x값 최저
-        if (preXY['x'] == 0){
-          // 현재 x값 오른쪽 밀기
-          // TvolumeFlowList.forEach((item, idx) =>{
-          //     let itemTemp = {...item};
-          //     itemTemp['x'] += rawV;
-          //     TvolumeFlowList[idx] = itemTemp; //setState로 변경사항 setState(temp);
-          // })
+        if (preXY['x'] == 0 || preXY['x'] < 0){
           setVolumeFlowList(volumeFlowList.map((item)=>{
             item['x'] += rawV;
           }))
@@ -693,12 +656,6 @@ const resetChart = () => {
         else{
           let vTemp = preXY['x']-rawV;
           if(vTemp<0){
-              // 현재 x값 오른쪽 밀기
-              // TvolumeFlowList.forEach(item =>{
-              //     let itemTemp = {...item};
-              //     itemTemp['x'] += Math.abs(vTemp);
-              //     item = itemTemp; //setState로 변경사항 setState(temp);
-              // })
               setVolumeFlowList(volumeFlowList.map((item)=>{
                 item['x'] += Math.abs(vTemp);
               }))
@@ -716,23 +673,12 @@ const resetChart = () => {
           // console.log("hererer")
           setInFDone(true);
         }
-        // if(preXY['y']<=0 && sessionVol !== 0 ){
-        //   let tempSesCnt = sessionCount + 1
-        //   setSessionCount(tempSesCnt); 
-        // }
         x = preXY['x'] + rawV;
       }
       
       volumeFlowList.push({x: x, y:rawF});
-      //  console.log(volumeFlowList);
       setVolumeFlowList(volumeFlowList);
-      //  if(timerReady && timerStart){
-      //    if(rawF == 0){
-      //      setTimerStart(false);
-      //      setMeasureDone(true);
-      //    }
-      //  }
-      // return {x: x, y:rawF};
+      setCalFlag(calFlag+1);
     }
     catch(err){
       console.log(err)
@@ -788,37 +734,44 @@ const resetChart = () => {
       //     console.log('Failed to select device. Please try again.');
     }
   }
+  useEffect(()=>{
+    function handleCharacteristicValueChanged(event) {
+      // 데이터 처리 및 UART 프로토콜 해석
+      arrayToString(event.target.value)
+    }
+    if(txCharRef&&txCharRef.current){
+      // Notify(구독) 이벤트 핸들러 등록
+      txCharRef.current.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
+      return function cleanup() {
+        txCharRef.current.removeEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
+    };
+  }
+  },[txCharRef.current])
   function onDisconnected(event) {
     // Object event.target is Bluetooth Device getting disconnected.
     console.log('> Bluetooth Device disconnected');
   }
   
-  // rawData 문자열
-  let [result, setResult] = useState();
   //데이터 문자로 바꾸기
-  let arrayToString = (temp)=>{
-    let buffer = temp.buffer;
-    let rawData = String.fromCharCode.apply(null, Array.from(new Uint8Array(buffer))).trim()
-    dataList.push(rawData);
-    setDataList([...dataList]);
-    return String.fromCharCode.apply(null, Array.from(new Uint8Array(buffer))).trim()
+  let arrayToString = async(temp)=>{
+    // let buffer = temp.buffer;
+    // rawData = String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
+    // dataList.push(dataCalculateStrategyE.convert(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()))
+    let data = dataCalculateStrategyE.convert(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim())
+    if(data !== undefined && data!==null){
+      setData(
+          data
+      );
+    }
+    // return String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
   }
-  //데이터 핸들링
-  let deviceDataHandling = (arr)=>{
-    let tempArr = [];
-    arr.forEach((item)=>{
-        tempArr.push(arrayToString(item))                                                                                                                                                                                                       
-    })
-    setResult(tempArr.join(' '));
-  }
-  // 데이터 출력
-  function handleCharacteristicValueChanged(event) {
-    const value = event.target.value;
-    // 데이터 처리 및 UART 프로토콜 해석
+  const [data, setData] = useState(null);
+  useEffect(()=>{
+    if(data!== null){
+      setDataList([...dataList, data]);
+    }
+  },[data])
 
-    console.log('Received data:', value);
-    arrayToString(value)
-  }
 
  //-----------------------------------------------------------------------------------------------
   // 확인창 
@@ -831,6 +784,8 @@ const resetChart = () => {
 //-----------------------------------------------------------------------------------------------
   // 확인창 
   const [disconnectStat, setDisconnectStat] = useState(false);
+  const [disconnectConfirm, setDisconnectConfirm] = useState(false); // 1번만 나오도록 설정
+
   const [confirm,setConfirm] = useState(true);
   let disconnectConfirmFunc = (val)=>{
     
@@ -1145,10 +1100,8 @@ const [calivration,setCalivration] = useState({
   });
 
   const calivrationApply = ()=>{
-    console.log()
     let rDataList = [];
-    
-    rawDataList.map((num)=>rDataList.push(String(num).padStart(9, "0"))) 
+    dataList.slice(0,calFlag).map((num)=>rDataList.push(String(num).padStart(9, "0")))
     if(serialNum !== undefined){
       axios.post(`/devices/${serialNum}/calibrations`, 
       {
