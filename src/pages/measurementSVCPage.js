@@ -186,28 +186,6 @@ const MeasurementSVCPage = () =>{
         temp[index] = allSvcGraph[index];
       }
     })
-    //그래프 비율
-    let svcMaxList = [];
-    let max = 1;
-    let min = 1;
-    let setRatio = 1;
-    if(allSvcGraph.length !== 0){
-      allSvcGraph.forEach((item)=>{
-        if(item.y === undefined){
-          item.forEach((gItem)=>{
-            svcMaxList.push(gItem.y);
-          })
-        }
-      })
-      min = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
-      max = Math.abs(Math.ceil(Math.max.apply(null,svcMaxList)));
-      setRatio = max >= min ? max : min;
-      setRatio = setRatio < 1 || setRatio === Infinity ? 1 : setRatio
-      console.log("setRatio1 : " +setRatio)
-      setSvcMax(setRatio);
-    }else{
-      setSvcMax(1);
-    }
     
     setSvcGraph(temp);
     console.log(temp);
@@ -265,8 +243,6 @@ const MeasurementSVCPage = () =>{
     console.log("!#!##")
 
     let svcMaxList = [];
-    let max = 1;
-    let min = 1;
     let setRatio = 1;
     console.log(111)
 
@@ -281,14 +257,23 @@ const MeasurementSVCPage = () =>{
           })
         }
       })
-      min = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
-      max = Math.abs(Math.ceil(Math.max.apply(null,svcMaxList)));
-      setRatio = max >= min ? max : min;
-      setRatio = setRatio < 1 || setRatio === Infinity ? 1 : setRatio
+      let decimal = Math.abs(Math.min.apply(null,svcMaxList))-Math.floor(Math.abs(Math.min.apply(null,svcMaxList)));
+      setRatio = Math.round(Math.abs(Math.min.apply(null,svcMaxList)));
+      setRatio = setRatio <= 1 || setRatio === Infinity ? 1 : setRatio
       console.log("setRatio2 : " +setRatio)
+      if(setRatio > 1 && setRatio <= 5 && decimal >= 0.5){
+        setRatio += 0.2;
+      }else if(setRatio <= 10){
+        setRatio += 0.5;
+      }else{
+        setRatio += 1;
+      }
       setSvcMax(setRatio);
+
     }else{
-      setSvcMax(1);
+      setTimeout(()=>{
+        setSvcMax(1);
+      },500)
     }
     
     let time = setTimeout(()=>{
@@ -1065,12 +1050,23 @@ useEffect(()=>{
       min = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
       max = Math.abs(Math.ceil(Math.max.apply(null,svcMaxList)));
       setRatio = max >= min ? max : min;
-      setRatio = setRatio < 1 || setRatio === Infinity ? 1 : setRatio
+      setRatio = setRatio <= 1 || setRatio === Infinity ? 1 : setRatio
+      if(setRatio <= 2){
+        setRatio += 0.1;
+      }else if(setRatio <= 5){
+        setRatio += 0.3;
+      }else if(setRatio <= 10){
+        setRatio += 0.8
+      }else{
+        setRatio += 1;
+      }
       console.log(max);
       console.log("setRatio3 : " +setRatio)
       setSvcMax(setRatio);
     }else{
-      setSvcMax(1);
+      setTimeout(()=>{
+        setSvcMax(1);
+      },500)
     }
     
     setSvcGraph(temp);
@@ -1217,9 +1213,6 @@ useEffect(()=>{
       datalabels: false,
     },
     responsive: true,
-    animation:{
-      duration:0
-    },
     maintainAspectRatio: false,
     interaction: false, 
     elements: {
@@ -2020,11 +2013,14 @@ useEffect(()=>{
             <div ref={firstBtnRef} onClick={()=>{
               // console.log({"nonDevice":noneDevice,"notifyStart":notifyStart,"notifyDone":notifyDone,"meaPreStart":meaPreStart, "blow":blow, "blowF":blowF, "meaStart":meaStart})
               if(!(firstBtnRef.current.classList.contains("disabled"))){
+                setTimeout(()=>{
+                  setSvcMax(1);
+                },500)
+
                 resetGraph()
               }
             }}> <p>재측정</p></div>
             <div ref={secondBtnRef} onClick={()=>{
-                setSvcMax(1);
               if(!(secondBtnRef.current.classList.contains("disabled"))){
                 if(!meaStart){
                   console.log(1)
