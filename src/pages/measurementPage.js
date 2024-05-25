@@ -207,8 +207,10 @@ const MeasurementPage = () =>{
       if(maxY < Math.max.apply(null,maxYArray)){
         console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
         maxY = Math.max.apply(null,maxYArray)+1;
-        if(minY > Math.floor(maxY/2)){
-          minY = Math.floor(maxY/2);
+        console.log(Math.floor(maxY/2))
+        console.log(minY);
+        if(Math.abs(minY) < Math.ceil(maxY/2)){
+          minY = -Math.floor(maxY/2);
         }
         maxX = maxY+Math.abs(minY);
       }
@@ -1154,34 +1156,43 @@ useEffect(()=>{
       if(volumFlowMaxX < x){
         volumFlowMaxX  = x;
       }
-
-
+      let listY = [];
+      volumeFlowList.forEach((item)=>{
+        listY.push(item.y);
+      })
       //y축 최소값
-      minY = volumFlowMin;
-      
-      //y축 최대값
-      maxY = Math.abs(minY) * 2;
-
+      minY = Math.min.apply(null,listY);
       //x축 최대값
       maxX = maxY+Math.abs(minY);
-      
+      // if(minY % 2 !=0 && minY <= -2){
+      //   minY -= 1;
+      // }
       //계산한 x축 보다 실제 x축이 더 클 경우
-      if(maxX <volumFlowMaxX){
-        maxX = volumFlowMaxX;
-        if(maxX % 2 != 0){
-          maxX -= 1;
+      let tf = Math.abs(minY*2) < Math.max.apply(null,listY);
+      if(tf){
+        maxY = Math.max.apply(null,listY);
+        if(maxY <= 2){
+          maxY += 0.1;
+        }else if(maxY <= 5){
+          maxY += 0.3;
+        }else if(maxY <= 10){
+          maxY += 0.8
+        }else{
+          maxY += 1;
         }
-        minY = -maxX/3*2;
-        //소수점이 0.7이라면
-        if(Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.7 || Math.floor(parseFloat(minY-parseInt(minY))*10)/10 === -0.4){
-          minY -= 0.1;
+        if(Math.abs(minY) < Math.abs(Math.ceil(-maxX/2))){
+          minY = Math.ceil(-maxX/2);
+        }
+      }else{
+        if(minY >= -10){
+          minY -= 0.5
+        }else{
+          minY -= 1;
         }
         maxY = Math.abs(minY*2);
-        
       }
-      if(minY % 2 !=0 && minY <= -2){
-        minY -= 1;
-      }
+      console.log(Math.max.apply(null,listY));
+      
 
       volumeFlowList.push({x: x, y:rawF});
       setVolumeFlowList(volumeFlowList);
@@ -1359,9 +1370,9 @@ useEffect(()=>{
       datalabels: false,
     },
     responsive: true,
-    animation:{
-      duration:0
-    },
+      animation:{
+        duration:0
+      },
     maintainAspectRatio: false,
     interaction: false, 
     elements: {

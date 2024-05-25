@@ -793,6 +793,7 @@ function DetailPage(){
   })
 
   const chartRatio=(trials,ver)=>{
+    console.log(trials)
     if(trials){
       // fvc volumFlowList min
       const minYArray = [];
@@ -801,35 +802,38 @@ function DetailPage(){
       var volumFlowListY;
       var volumFlowListMaxX;
       trials.map((item,idx)=>{
-        //y축
-        if(ver == 1){
-          volumFlowListY = item.graph.volumeFlow.map((item)=>{
-            return item.y;
-          });
-          //x축
-          volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
-            return item.x;
-          });
-        }else{
-          volumFlowListY = item.map((item)=>{
-            return item.y;
-          });
-          //x축
-          volumFlowListMaxX = item.map((item)=>{
-            return item.x;
-          });
+        if(item.best){
+          //y축
+          if(ver == 1){
+            volumFlowListY = item.graph.volumeFlow.map((item)=>{
+              return item.y;
+            });
+            //x축
+            volumFlowListMaxX = item.graph.volumeFlow.map((item)=>{
+              return item.x;
+            });
+          }else{
+            volumFlowListY = item.map((item)=>{
+              return item.y;
+            });
+            //x축
+            volumFlowListMaxX = item.map((item)=>{
+              return item.x;
+            });
+          }
+          
+          //각각의 y축 최소값
+          var min = Math.abs((Math.min(...volumFlowListY)) - 1)- Math.abs(Math.floor((Math.min(...volumFlowListY)))) > 0.5 && Math.floor((Math.min(...volumFlowListY))) < -4? Math.floor((Math.min(...volumFlowListY))) - 1 : Math.floor((Math.min(...volumFlowListY)))
+          var max = Math.floor((Math.max(...volumFlowListY)))
+          if(min < -4){
+            // min -= 2;
+          }
+          maxYArray.push(max);
+          minYArray.push(min);
+          //각각의 x축 최대값
+          maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
         }
         
-        //각각의 y축 최소값
-        var min = Math.abs((Math.min(...volumFlowListY)) - 1)- Math.abs(Math.floor((Math.min(...volumFlowListY)))) > 0.5 && Math.floor((Math.min(...volumFlowListY))) < -4? Math.floor((Math.min(...volumFlowListY))) - 1 : Math.floor((Math.min(...volumFlowListY)))
-        var max = Math.floor((Math.max(...volumFlowListY)))
-        if(min < -4){
-          // min -= 2;
-        }
-        maxYArray.push(max);
-        minYArray.push(min);
-        //각각의 x축 최대값
-        maxXArray.push(Math.ceil(Math.max(...volumFlowListMaxX)));
       })
       //y축 최소값
       minY = Math.min.apply(null,minYArray);
@@ -858,8 +862,8 @@ function DetailPage(){
       if(maxY < Math.max.apply(null,maxYArray)){
         console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
         maxY = Math.max.apply(null,maxYArray)+1;
-        if(minY > Math.floor(maxY/2)){
-          minY = Math.floor(maxY/2);
+        if(Math.abs(minY) < Math.ceil(maxY/2)){
+          minY = -Math.floor(maxY/2);
         }
         maxX = maxY+Math.abs(minY);
       }

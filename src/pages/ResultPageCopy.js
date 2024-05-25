@@ -80,11 +80,13 @@ useEffect(()=>{
 
       // 매 결과에서 데이터 추출
       trials.forEach((item)=>{
+        console.log(item);
         timeVolumeList.push(item.graph.timeVolume);
         volumeFlowList.push(item.graph.volumeFlow);
         //현 timeVolume에서 최대값 찾기
         timeVolumeMaxList.push(item.results[3].meas);
         timeVolumeMaxListX.push(item.graph.timeVolume[item.graph.timeVolume.length-1].x); //최대 x값 찾기
+
       })
       timeVolumeMaxListX.sort((a,b)=>a-b);
       timeVolumeMaxList.forEach((item, idx)=>{
@@ -135,7 +137,7 @@ useEffect(()=>{
         }
         
         //각각의 y축 최소값
-        var min = Math.abs((Math.min(...volumFlowListY)) - 1)- Math.abs(Math.floor((Math.min(...volumFlowListY)))) > 0.5 && Math.floor((Math.min(...volumFlowListY))) < -4? Math.floor((Math.min(...volumFlowListY))) - 1 : Math.floor((Math.min(...volumFlowListY)))
+        var min = Math.abs((Math.min(...volumFlowListY)) - 1)- Math.abs(Math.floor((Math.min(...volumFlowListY)))) > 0.5 && Math.floor((Math.min(...volumFlowListY))) < -7? Math.floor((Math.min(...volumFlowListY))) - 1 : Math.floor((Math.min(...volumFlowListY)))
         var max = Math.floor((Math.max(...volumFlowListY)))
         if(min < -4){
           // min -= 2;
@@ -166,14 +168,17 @@ useEffect(()=>{
         maxY = Math.abs(minY*2);
       }
       if((minY % 2 !=0 && minY <= -2)){
+        console.log(minY)
         minY -= 1;
         maxX = maxY+Math.abs(minY);
       }
       if(maxY < Math.max.apply(null,maxYArray)){
         console.log("maxY : "+maxY+", real Y : " +Math.max.apply(null,maxYArray))
         maxY = Math.max.apply(null,maxYArray)+1;
-        if(minY > Math.floor(maxY/2)){
-          minY = Math.floor(maxY/2);
+        console.log(Math.floor(maxY/2))
+        console.log(minY);
+        if(Math.abs(minY) < Math.ceil(maxY/2)){
+          minY = -Math.floor(maxY/2);
         }
         maxX = maxY+Math.abs(minY);
       }
@@ -309,8 +314,7 @@ useEffect(()=>{
       }
     })
     let svcMaxList = [];
-    let max = 1;
-
+    let setRatio = 1;
     if(allSvcGraph.length !== 0){
       allSvcGraph.forEach((item)=>{
         if(item.y === undefined){
@@ -319,9 +323,23 @@ useEffect(()=>{
           })
         }
       })
-      max = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
-      console.log(max);
-      setSvcMax(max+1);
+      let decimal = Math.abs(Math.min.apply(null,svcMaxList))-Math.floor(Math.abs(Math.min.apply(null,svcMaxList)));
+      setRatio = Math.round(Math.abs(Math.min.apply(null,svcMaxList)));
+      setRatio = setRatio <= 1 || setRatio === Infinity ? 1 : setRatio
+      console.log("setRatio2 : " +setRatio)
+      if(setRatio > 1 && setRatio <= 5 && decimal >= 0.5){
+        setRatio += 0.2;
+      }else if(setRatio <= 10){
+        setRatio += 0.5;
+      }else{
+        setRatio += 1;
+      }
+      setSvcMax(setRatio);
+
+    }else{
+      setTimeout(()=>{
+        setSvcMax(1);
+      },500)
     }
     setSvcGraph(temp);
   },[svcTrigger])
@@ -417,9 +435,6 @@ useEffect(()=>{
       datalabels: false,
     },
     responsive: true,
-    animation:{
-      duration:0
-    },
     maintainAspectRatio: false,
     interaction: false, 
     elements: {
@@ -505,9 +520,6 @@ useEffect(()=>{
     },
     
     responsive: true,
-    animation:{
-      duration:0
-    },
     maintainAspectRatio: false,
     interaction: false, 
     elements: {
@@ -804,7 +816,7 @@ useEffect(()=>{
   useEffect(()=>
   {
     let svcMaxList = [];
-    let max = 1;
+    let setRatio = 1;
     console.log(111)
 
     if(svcGraph.length !== 0){
@@ -818,11 +830,22 @@ useEffect(()=>{
           })
         }
       })
-      max = Math.abs(Math.floor(Math.min.apply(null,svcMaxList)));
-      console.log(max);
-      setSvcMax(max+1);
+      let decimal = Math.abs(Math.min.apply(null,svcMaxList))-Math.floor(Math.abs(Math.min.apply(null,svcMaxList)));
+      setRatio = Math.round(Math.abs(Math.min.apply(null,svcMaxList)));
+      setRatio = setRatio <= 1 || setRatio === Infinity ? 1 : setRatio
+      console.log("setRatio2 : " +setRatio)
+      if(setRatio > 1 && setRatio <= 5 && decimal >= 0.5){
+        setRatio += 0.2;
+      }else if(setRatio <= 10){
+        setRatio += 0.5;
+      }else{
+        setRatio += 1;
+      }
+      setSvcMax(setRatio);
     }else{
-      setSvcMax(1);
+      setTimeout(()=>{
+        setSvcMax(1);
+      },500)
     }
     let time = setTimeout(()=>{
       let time2 = setTimeout(() => {
