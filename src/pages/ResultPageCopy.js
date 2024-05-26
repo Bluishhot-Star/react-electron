@@ -86,7 +86,6 @@ useEffect(()=>{
         //현 timeVolume에서 최대값 찾기
         timeVolumeMaxList.push(item.results[3].meas);
         timeVolumeMaxListX.push(item.graph.timeVolume[item.graph.timeVolume.length-1].x); //최대 x값 찾기
-
       })
       timeVolumeMaxListX.sort((a,b)=>a-b);
       timeVolumeMaxList.forEach((item, idx)=>{

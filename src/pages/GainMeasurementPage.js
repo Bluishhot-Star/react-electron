@@ -809,7 +809,7 @@ const resetChart = () => {
 
       
     // })
-    // console.log(dataList1)
+    console.log(volumeFlowList)
     let data = {
       labels: '',
       datasets: [{
@@ -1098,7 +1098,8 @@ const [calivration,setCalivration] = useState({
 				
         "calibrationId": ""
   });
-
+  // 보정오류
+  const [gainError,setGainError] = useState(false);
   const calivrationApply = ()=>{
     let rDataList = [];
     dataList.slice(0,calFlag).map((num)=>rDataList.push(String(num).padStart(9, "0")))
@@ -1120,6 +1121,9 @@ const [calivration,setCalivration] = useState({
         setCalivration(res.data.response);
       })
       .catch((err)=>{
+        if(err.response.data.subCode === 4007){
+          setGainError(true)
+        }
         console.log(err);
       })
     }
@@ -1157,6 +1161,7 @@ const [calivration,setCalivration] = useState({
   return(
     <div className="gain-measurement-page-container">
       {disconnectStat&&confirm ? <Confirm content={"연결된 Spirokit기기가 없습니다.\n설정 페이지로 이동해서 Spirokit을 연결해주세요."} btn={true} onOff={setDisconnectStat} select={disconnectConfirmFunc}/> : null}
+      {gainError ? <Confirm content={"보정 적용에 실패했습니다. 가이드 구간을 통과하지 못하였거나, 정도관리(3L)에 맞추셔야 합니다(2L 이상 허용).\nInvalid calibration"} btn={"one"} onOff={setGainError} select={()=>{}}/> : null}
       {readyAlert ? <Confirm content="준비 중입니다..." btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
       <div className="gain-measurement-page-nav">
         <div className='gain-measurement-page-backBtn' onClick={()=>{navigatorR(-1)}}>
