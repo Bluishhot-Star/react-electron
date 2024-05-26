@@ -809,7 +809,7 @@ const resetChart = () => {
 
       
     // })
-    console.log(volumeFlowList)
+    // console.log(dataList1)
     let data = {
       labels: '',
       datasets: [{
