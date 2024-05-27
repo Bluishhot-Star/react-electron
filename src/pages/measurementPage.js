@@ -105,30 +105,39 @@ const MeasurementPage = () =>{
   const simpleResultsRef = useRef([]);
   useEffect(()=>{
     if(totalData){
+      console.log(totalData)
       //fvc의 심플카드
       let timeVolumeList = [];
       let volumeFlowList = [];
       let timeVolumeMaxList = [];
       let timeVolumeMaxListX = [];
-  
+      let timeVolumeMaxListY = [];
       if(totalData.trials){
-        console.log(totalData.trials.length);
         let temp = new Array(totalData.trials.length).fill(0);
         setGraphOnOff(temp);
-  
+
         // 매 결과에서 데이터 추출
         totalData.trials.forEach((item)=>{
+          console.log(item);
           timeVolumeList.push(item.graph.timeVolume);
           volumeFlowList.push(item.graph.volumeFlow);
-  
           //현 timeVolume에서 최대값 찾기
           timeVolumeMaxList.push(item.results[3].meas);
           timeVolumeMaxListX.push(item.graph.timeVolume[item.graph.timeVolume.length-1].x); //최대 x값 찾기
+          timeVolumeMaxListY.push(item.graph.timeVolume[item.graph.timeVolume.length-1].y); //최대 Y값 찾기
         })
         timeVolumeMaxListX.sort((a,b)=>a-b);
+        timeVolumeMaxListY.sort((a,b)=>a-b);
+        let mX = 4;
         timeVolumeMaxList.forEach((item, idx)=>{
-          timeVolumeList[idx].push({x : Math.max(Math.ceil(timeVolumeMaxListX[timeVolumeMaxListX.length-1]), 3), y: timeVolumeList[idx][timeVolumeList[idx].length-1].y})
+          mX = Math.max(Math.ceil(timeVolumeMaxListX[timeVolumeMaxListX.length-1]))+Math.max(Math.ceil(timeVolumeMaxListY[timeVolumeMaxListY.length-1]))
+          console.log(mX)
+          if(mX <=4){
+            mX = 4;
+          }
+          timeVolumeList[idx].push({x : mX, y: timeVolumeList[idx][timeVolumeList[idx].length-1].y})
         })
+        graphOption2.scales.x.max = parseInt(Math.max(...timeVolumeMaxListX))+Math.max(...timeVolumeMaxListY) <=4 ? 4 : parseInt(Math.max(...timeVolumeMaxListX))+Math.max(...timeVolumeMaxListY);
         setVolumeFlow([]);
         setTimeVolume([]);
         setAllTimeVolumeList(timeVolumeList);
@@ -137,7 +146,7 @@ const MeasurementPage = () =>{
         graphOption.scales.x.max = parseInt(Math.max(...timeVolumeMaxList));
         setTrigger(0);
       }
-      
+        
     }
   },[totalData])
   //차트 비율
@@ -1483,7 +1492,7 @@ useEffect(()=>{
         suggestedMax: 3,
         // suggestedMax: 6.0,
         ticks:{
-          stepSize : .5,
+          stepSize : 1,
           beginAtZero: false,
           max: 12.0,
           autoSkip: false,
