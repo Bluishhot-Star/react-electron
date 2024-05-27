@@ -724,7 +724,8 @@ function DetailPage(){
     let timeVolumeList = [];
     let volumeFlowList = [];
     let timeVolumeMaxList = [];
-
+    let timeVolumeMaxListX = [];
+    let timeVolumeMaxListY = [];
     if(trials){
       console.log(trials.length);
       let count = 0; //pre post 인덱스 관리 (색 구분용)
@@ -745,6 +746,41 @@ function DetailPage(){
           timeVolumeMaxList.push(item.results[3].meas);
         }
       })
+      // 매 결과에서 데이터 추출
+      trials.forEach((item)=>{
+        if(item.best){
+          if(item.bronchodilator === "pre"){
+            setGraphPreCount([...graphPreCount, count++])
+            setPreResult(item.results);
+          }
+          else if(item.bronchodilator === "post"){
+            setGraphPostCount([...graphPreCount, count++]);
+            setPostResult(item.results);
+          }
+          console.log(item);
+          timeVolumeList.push(item.graph.timeVolume);
+          volumeFlowList.push(item.graph.volumeFlow);
+          //현 timeVolume에서 최대값 찾기
+          timeVolumeMaxList.push(item.results[3].meas);
+          timeVolumeMaxListX.push(item.graph.timeVolume[item.graph.timeVolume.length-1].x); //최대 x값 찾기
+          timeVolumeMaxListY.push(item.graph.timeVolume[item.graph.timeVolume.length-1].y); //최대 Y값 찾기   
+        }
+      })
+      timeVolumeMaxListX.sort((a,b)=>a-b);
+      timeVolumeMaxListY.sort((a,b)=>a-b);
+      let mX = 4;
+      timeVolumeMaxList.forEach((item, idx)=>{
+        // mX = Math.max(Math.ceil(timeVolumeMaxListX[timeVolumeMaxListX.length-1]))+Math.max(Math.ceil(timeVolumeMaxListY[timeVolumeMaxListY.length-1]))
+        // console.log(mX)
+        mX = Math.max(Math.ceil(timeVolumeMaxListY[timeVolumeMaxListY.length-1]));
+        if(mX <=4){
+          mX = 4;
+        }
+
+        console.log(Math.max(Math.ceil(timeVolumeMaxListY[timeVolumeMaxListY.length-1])))
+        timeVolumeList[idx].push({x : mX, y: timeVolumeList[idx][timeVolumeList[idx].length-1].y})
+      })
+      graphOption2.scales.x.max = mX;
       setVolumeFlow(volumeFlowList);
       setTimeVolume(timeVolumeList);
       setTvMax(timeVolumeMaxList);
@@ -1032,18 +1068,22 @@ function DetailPage(){
   //   },
   // }
 
-  const graphOption2={
+  const [graphOption2, setGraphOption2]=useState({
+
     plugins:{
+      afterDraw: function (chart, easing) {
+      },
       legend: {
           display: false
       },
       resizeDelay:0,
       datalabels: false,
+      
     },
+    afterDraw: function (chart, easing) {
+    },
+    
     responsive: true,
-    animation:{
-      // duration:0
-    },
     maintainAspectRatio: false,
     interaction: false, 
     elements: {
@@ -1051,12 +1091,12 @@ function DetailPage(){
         radius: 0,
       },
     },
+    
     scales: {
       x: {
         axios: 'x',
         min: 0,
         suggestedMax: 3,
-        // suggestedMax: 6.0,
         ticks:{
           stepSize : .5,
           beginAtZero: false,
@@ -1103,7 +1143,7 @@ function DetailPage(){
         }
       },
     },
-  }
+  })
   const graphOption3={
     plugins:{
       legend: {

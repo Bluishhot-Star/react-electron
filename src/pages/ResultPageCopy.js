@@ -74,6 +74,7 @@ useEffect(()=>{
     let volumeFlowList = [];
     let timeVolumeMaxList = [];
     let timeVolumeMaxListX = [];
+    let timeVolumeMaxListY = [];
     if(trials){
       let temp = new Array(trials.length).fill(0);
       setGraphOnOff(temp);
@@ -86,17 +87,26 @@ useEffect(()=>{
         //현 timeVolume에서 최대값 찾기
         timeVolumeMaxList.push(item.results[3].meas);
         timeVolumeMaxListX.push(item.graph.timeVolume[item.graph.timeVolume.length-1].x); //최대 x값 찾기
+        timeVolumeMaxListY.push(item.graph.timeVolume[item.graph.timeVolume.length-1].y); //최대 Y값 찾기
       })
       timeVolumeMaxListX.sort((a,b)=>a-b);
+      timeVolumeMaxListY.sort((a,b)=>a-b);
+      let mX = 4;
       timeVolumeMaxList.forEach((item, idx)=>{
-        timeVolumeList[idx].push({x : Math.max(Math.ceil(timeVolumeMaxListX[timeVolumeMaxListX.length-1]), 3), y: timeVolumeList[idx][timeVolumeList[idx].length-1].y})
+        mX = Math.max(Math.ceil(timeVolumeMaxListX[timeVolumeMaxListX.length-1]))+Math.max(Math.ceil(timeVolumeMaxListY[timeVolumeMaxListY.length-1]))
+        console.log(mX)
+        if(mX <=4){
+          mX = 4;
+        }
+        timeVolumeList[idx].push({x : mX, y: timeVolumeList[idx][timeVolumeList[idx].length-1].y})
       })
+      console.log(timeVolumeMaxListX);
       setVolumeFlow(volumeFlowList);
       setTimeVolume(timeVolumeList);
       setAllTimeVolumeList(timeVolumeList);
       setAllVolumeFlowList(volumeFlowList);
       setTvMax(timeVolumeMaxList);
-      graphOption.scales.x.max = parseInt(Math.max(...timeVolumeMaxList));
+      graphOption2.scales.x.max = parseInt(Math.max(...timeVolumeMaxListX))+Math.max(...timeVolumeMaxListY) <=4 ? 4 : parseInt(Math.max(...timeVolumeMaxListX))+Math.max(...timeVolumeMaxListY);
       setTrigger(0);
 
 
