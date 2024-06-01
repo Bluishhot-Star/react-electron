@@ -20,8 +20,9 @@ import styled from "styled-components";
 
 var maxY = 2;
 var minY = -1;
-var maxX = 6;
+var maxX = 2;
 var volumFlowMin = -1;
+var volumFlowMax = 2;
 var volumFlowMaxX = 6;
 //FVC 검사 페이지
 const MeasurementPage = () =>{
@@ -266,7 +267,7 @@ const MeasurementPage = () =>{
       setVolumeFlow([]);
       maxY = 2;
       minY = -1;
-      maxX = 6;
+      maxX = 2;
       return;
     }
     // 누른거 있을때
@@ -935,7 +936,7 @@ useEffect(()=>{
   useEffect(()=>{
     maxY = 2;
     minY = -1;
-    maxX = 6;
+    maxX = 2;
     volumFlowMin = 0;
     volumFlowMaxX = 0;
     if(meaStart){
@@ -1161,6 +1162,7 @@ useEffect(()=>{
           
         }
       }
+
       //x축
       if(volumFlowMaxX < x){
         volumFlowMaxX  = x;
@@ -1172,11 +1174,10 @@ useEffect(()=>{
       //y축 최소값
       minY = Math.min.apply(null,listY);
       //x축 최대값
-      maxX = maxY+Math.abs(minY);
       // if(minY % 2 !=0 && minY <= -2){
       //   minY -= 1;
       // }
-      //계산한 x축 보다 실제 x축이 더 클 경우
+      //계산한 Y축 보다 실제 Y축이 더 클 경우
       let tf = Math.abs(minY*2) < Math.max.apply(null,listY);
       if(tf){
         maxY = Math.max.apply(null,listY);
@@ -1189,8 +1190,11 @@ useEffect(()=>{
         }else{
           maxY += 1;
         }
-        if(Math.abs(minY) < Math.abs(Math.ceil(-maxX/2))){
-          minY = Math.ceil(-maxX/2);
+        
+        if(minY > -maxY/2){
+          minY = -maxY/2;
+          minY.toFixed(1);
+          console.log(minY)
         }
       }else{
         if(minY >= -10){
@@ -1200,9 +1204,11 @@ useEffect(()=>{
         }
         maxY = Math.abs(minY*2);
       }
+      
       console.log(Math.max.apply(null,listY));
       
-
+      maxX = maxY+Math.abs(minY);
+      console.log("maxX : "+maxX+" maxY : " +maxY+" minY : "+minY)
       volumeFlowList.push({x: x, y:rawF});
       setVolumeFlowList(volumeFlowList);
       setCalFlag(calFlag+1);
@@ -1393,11 +1399,12 @@ useEffect(()=>{
       x: {
         axios: 'x',
         min: 0,
-        suggestedMax:()=>{
-          if(maxX > 6){
+        max:()=>{
+          if(maxX > 3){
+            console.log(maxX)
             return maxX;
           }
-          return 6;
+          return 3;
         },
         // max: parseInt(Math.max(...tvMax)),
         ticks:{
@@ -2302,7 +2309,7 @@ useEffect(()=>{
                 resetGraph()
                 maxY = 2;
                 minY = -1;
-                maxX = 6;
+                maxX = 2;
                 volumFlowMin = 0;
                 volumFlowMaxX = 0;
               }
