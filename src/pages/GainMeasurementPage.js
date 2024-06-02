@@ -42,82 +42,6 @@ const GainMeasurementPage = () =>{
   let navigatorR = useNavigate();
   const state = location.state;
 
-  
-//  // 세션 가이드 컨텐츠
-  const [gaugeContent, setGaugeContent] = useState()
-
-  //흡기 선?
-  const [inF, setInF] = useState(-1);
-  //세션 세팅 완료
-  const [inFDone, setInFDone] = useState(false);
-
-  // 첫 가이드 컨텐츠 세팅 후 전체 세션 진행 수 설정 (흡기 선 breath*2, 호기 breathC *2 -1)
-  const [sessionVol, setSessionVol] = useState(0);
-
-  //  // 호/흡 세션 완료 후 timer로 전환 여부
-  const [timerReady, setTimerReady] = useState(false);
-  
-  //첫 가이드 컨텐츠 세팅
-  //  useEffect(()=>{
-  //    if(inF !== -1){
-  //      if(inF && timerReady===false){//흡기 선
-  //        setGaugeContent({r11:"1", r12:breathCount, r2:"IN"})
-  //       //  setSessionVol(breathCount*2);
-  //      }
-  //      else if(!inF && timerReady===false){//호기 선
-  //        setGaugeContent({r11:"1", r12:breathCount, r2:"OUT"})
-  //       //  setSessionVol(breathCount*2-1);
-  //      }
-  //      setSessionCount(1);
-  //    }
-  //  },[inF, timerReady])
-  
-  // 세션 카운트
-  const [sessionCount, setSessionCount] = useState(0);
-
-  // in<->out flip
-  let inOutFlip = (val) =>{
-    if(val == "IN"){
-      return "OUT"
-    }
-    else{
-      return "IN"
-    }
-  }
-
-  // 호<->흡 바뀌면서 컨텐츠 바꾸기
-  let sessionFlip = () => {
-    if(sessionCount > sessionVol){
-      setTimerReady(true);
-      return;
-    }
-    if(sessionCount !== 0 && sessionCount%2 == 0){ //짝수면 카운트업
-      //  let tgC = parseInt(gaugeContent.r11) + 1
-      //  setGaugeContent({r11:tgC, r12: breathCount, r2: inOutFlip(gaugeContent.r2)});
-    }
-    else{
-      setGaugeContent({...gaugeContent, r2: inOutFlip(gaugeContent.r2)});
-    }
-  }
-  useEffect(()=>{
-    if(sessionCount !== 1 && sessionCount !== 0){
-      sessionFlip();
-    }
-  },[sessionCount])
-  
-  //  const [timerTick, setTimerTick] = useState(250); //default 250 (6/15)
-  //  const [timerRunStat, setTimerRunStat] = useState(false);
-  //  useEffect(()=>{
-  //    if(timerRunStat){
-  //      let i =1;
-  //      setInterval(() => {
-  //        if(i>60)return;
-  //        itemRef.current[i++].classList += " tickColor";
-  //      }, timerTick);
-  //    }
-  //  },[timerRunStat])
-  
-
 
   class DataCalculateStrategyE {
     constructor() {
@@ -318,15 +242,12 @@ const GainMeasurementPage = () =>{
   // 기기 없음 메세지
   const [noneDevice, setNoneDevice] = useState(false);
   // 시작확인 메세지
-  const [startMsg, setStartMsg] = useState(false);
   // 검사 시작 전 구독상태
   const [notifyStart, setNotifyStart] = useState(false);
   // 구독 완료
   const [notifyDone, setNotifyDone] = useState(false);
   // 검사버튼 먼저 누르고 온 경우 notify 확인 후 구독 완료
   const [alNotifyDone, setAlNotifyDone] = useState(false);
-  // 검사 시작 전 준비완료 상태(구독완)
-  // const [meaPreStart, setMeaPreStart] = useState(false);
 
   // 검사 활성화위한 호기 감지
   const [blow, setBlow] = useState(false);
@@ -337,17 +258,11 @@ const GainMeasurementPage = () =>{
   const [meaStart, setMeaStart] = useState(false);
   // 데이터 리스트
   const [dataList, setDataList] = useState([]);
-  // real데이터 리스트
-  // const [realDataList, setRealDataList] = useState([]);
   // 검사시작 flag, 이 이후로 realData
   const [flag, setFlag] = useState(-1)
 
   // volume-flow 그래프 좌표
   const [volumeFlowList, setVolumeFlowList] = useState([]);
-  const [timeVolumeList, setTimeVolumeList] = useState([]);
-  // let TvolumeFlowList = [];
-  // time-volume 그래프 좌표
-  // const [timeVolumeList, setTimeVolumeList] = useState([]);
 
 //----------------------------------------------------------------------------------------------- 111111
 
@@ -422,35 +337,18 @@ const GainMeasurementPage = () =>{
 
   useEffect(()=>{ 
     if(!blowF){
-      // if(dataList[0] == 0){
-      // }
       if(dataList[0] == 0 && dataList.length == 1){
         setNotifyDone(true);
         setBlow(true);
       }
-      // console.log(dataList[dataList.length-1].slice(0,1))
-      // if(dataList[dataList.length-1].slice(0,1) == "0"){
-      
       if(dataList.length > 1  && String(dataList[dataList.length-1]).padStart(9,'0').slice(0) !== "0"){
         //css 변화로 검사 활성화
         if(firstBtnRef.current.classList.contains("disabled")){
           firstBtnRef.current.classList.remove("disabled");
         }
       }
-      // if(blow==true){ //  입김 불면!
-      // }
     }
   },[dataList])
-
-
-//  useEffect(()=>{
-//   if(readyAlert){
-    
-//     if(firstBtnRef.current.classList.contains("disabled")){
-//     }
-//     firstBtnRef.current.classList.remove("disabled");
-//   }
-//  },[readyAlert])
 
 //-----------------------------------------------------------------------------------------------
   // 시작 확인 시 flag 세우기 -> 처리할 데이터 슬라이싱
@@ -459,10 +357,8 @@ const GainMeasurementPage = () =>{
     minY = -1;
     maxX = 6;
     if(meaStart){
-      setInF(-1);
       setDataList([0,0]);
       setCalDataList([]);
-      // setCalFlagTV(1);
       setCalFlag(1);
 
       let time = setTimeout(() => {
@@ -476,7 +372,6 @@ const GainMeasurementPage = () =>{
   
 //-----------------------------------------------------------------------------------------------
 
-  // const [rawDataList, setRawDataList] = useState([0]); // raw data 처리 전 (0만 뗀거)
   const [calDataList, setCalDataList] = useState([]); // raw data 처리 -> time/volume/lps/exhale
   const [calFlag, setCalFlag] = useState(0); // calDataList에서 그래프 좌표로 처리할 index=>현재 처리된 index
 
@@ -507,16 +402,9 @@ const GainMeasurementPage = () =>{
     
 
     if(cExhale !== exhale){
-      if(sessionVol !== 0 ){
-        let tempSesCnt = sessionCount + 1
-        setSessionCount(tempSesCnt); 
-        setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
-      }
+      setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
     }
-    //  if(cExhale && timerReady && !timerStart && !measureDone){
-    //    setTimerStart(true);
-    //  }
-
+    
     setCExhale(exhale);
     setCTime(time);
     setCalibratedLps(lps)
@@ -592,28 +480,11 @@ const resetChart = () => {
     
     "calibrationId": ""
 })
-  setInF(-1);
-  setInFDone(false);
+
   setVolumeFlowList([{x:0, y:0}]);
   setCalDataList([calDataList[0]]);
   setCalFlag(1);
-  setTimerReady(false);
 }
-
-
-
-
-//------------------------------------------------------------------------------------------------
-
-  //  useEffect(()=>{
-  //    if(startMsg){
-  //      //시작 메세지 띄우기
-  //      console.log("시작 메세지 띄우기")
-  //      setConfirmStat(true);
-  //      // setDataList([])
-  //      // setMeaStart(true);
-  //    }
-  //  },[startMsg])
 
 //-----------------------------------------------------------------------------------------------
 
@@ -622,8 +493,6 @@ const resetChart = () => {
     try{
       let x, y;
       let preXY; //이전값
-      // preXY 값 할당
-      // let TvolumeFlowList = [...volumeFlowList];
       //초기값 세팅
       if(volumeFlowList.length == 0){
         preXY = {x:0, y:0}
@@ -634,17 +503,7 @@ const resetChart = () => {
       }
   
       // 흡기 시
-      if (rawF < 0){
-        if(!inFDone && meaStart && rawV!==0){ //흡기선?
-          setInF(true);
-          setInFDone(true);
-        }
-        
-        // if(preXY['y']<=0 && sessionVol !== 0 ){
-        //   let tempSesCnt = sessionCount + 1
-        //   setSessionCount(tempSesCnt); 
-        // }
-
+      if (rawF < 0){        
         //x값 처리
         // x값 최저
         if (preXY['x'] == 0 || preXY['x'] < 0){
@@ -668,11 +527,6 @@ const resetChart = () => {
       }
       //호기 시
       else{
-        if(!inFDone && meaStart && rawV!==0){ //호기선?
-          setInF(false);
-          // console.log("hererer")
-          setInFDone(true);
-        }
         x = preXY['x'] + rawV;
       }
       
@@ -754,16 +608,12 @@ const resetChart = () => {
   
   //데이터 문자로 바꾸기
   let arrayToString = async(temp)=>{
-    // let buffer = temp.buffer;
-    // rawData = String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
-    // dataList.push(dataCalculateStrategyE.convert(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()))
     let data = dataCalculateStrategyE.convert(String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim())
     if(data !== undefined && data!==null){
       setData(
           data
       );
     }
-    // return String.fromCharCode.apply(null, Array.from(new Uint8Array(temp.buffer))).trim()
   }
   const [data, setData] = useState(null);
   useEffect(()=>{
@@ -795,7 +645,6 @@ const resetChart = () => {
       setConfirm(false);
     }
   }
-  useEffect(()=>{console.log(confirm)},[confirm])
 //-----------------------------------------------------------------------------------------------
 
 
@@ -815,7 +664,7 @@ const resetChart = () => {
       datasets: [{
         label: "",
             data: volumeFlowList,
-            borderColor: `red`,
+            borderColor: `rgba(1, 138, 190, 1)`,
             borderWidth: 2.5,
             showLine: true,
             tension: 0.4
@@ -853,16 +702,13 @@ const resetChart = () => {
   useEffect(()=>{
     let time = setTimeout(() => {
       if (first["x"]===second["x"] && first["y"]==second["y"]){
-        console.log("OOOOOOHHH")
         setTemp(true);
         if(chartRef.current){
-          console.log("HELLO")
           chartRef.current.resize();
         };
       }
       else{
         setTemp(false)
-        console.log("HEllt")
       };
     },300);
     return()=>{clearTimeout(time)}
