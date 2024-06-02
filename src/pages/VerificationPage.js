@@ -388,7 +388,7 @@ const VerificationPage = () =>{
     let exhale = dataCalculateStrategyE.isExhale(current);
     
 
-    if(cExhale !== exhale && volumeFlowList){
+    if(cExhale !== exhale && volumeFlowList.length !== 0){
       setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
     }
     
@@ -419,6 +419,7 @@ const VerificationPage = () =>{
 //------------------------------------------------------------------------------------------------
 //재검사
 const resetChart = () => {
+  setDataList([0,0]);
   setApply(false)
   setVerify([])
   setPass({
@@ -1099,6 +1100,7 @@ const [calivration,setCalivration] = useState({
     <>
     <div ref={rootRef} className="verify-measurement-page-container">
       {goToResult ? <Confirm content={"잠시만 기다려주세요."} btn={false} onOff={setGoToResult}/> : null}
+      {confirmStat ? <Confirm content="보정 검증을 시작하시겠습니까?" btn={true} onOff={setConfirmStat} select={confirmFunc}/> : null}
       {disconnectStat&&confirm ? <Confirm content={"연결된 Spirokit기기가 없습니다.\n설정 페이지로 이동해서 Spirokit을 연결해주세요."} btn={true} onOff={setDisconnectStat} select={disconnectConfirmFunc}/> : null}
       {readyAlert ? <Confirm content="준비 중입니다..." btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
       <div className="verify-measurement-page-nav">
@@ -1123,7 +1125,7 @@ const [calivration,setCalivration] = useState({
                 if(!(firstBtnRef.current.classList.contains("disabled"))){
                   resetChart()
                   setBlowF(true);
-                  setMeaStart(true); 
+                  setConfirmStat(true); 
                   secondBtnRef.current.classList.remove("disabled");
                   firstBtnRef.current.classList += " disabled";
                   thirdBtnRef.current.classList.remove("disabled");
@@ -1134,7 +1136,6 @@ const [calivration,setCalivration] = useState({
             <div ref={secondBtnRef} onClick={()=>{
               if(!secondBtnRef.current.classList.contains("disabled")){
                 resetChart()
-                
               }
               }}><RiLungsLine className='lungIcon'/>재측정</div>
             <div ref={thirdBtnRef} onClick={()=>{

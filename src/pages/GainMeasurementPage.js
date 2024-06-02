@@ -17,8 +17,6 @@ import { useSelector } from "react-redux"
 var maxY = 2;
 var minY = -1;
 var maxX = 6;
-var volumFlowMin = -1;
-var volumFlowMaxX = 6;
 
 const GainMeasurementPage = () =>{
   ChartJS.register(RadialLinearScale, LineElement, Tooltip, Legend, ...registerables,annotationPlugin);
@@ -394,6 +392,7 @@ const GainMeasurementPage = () =>{
   const [cVolume, setCVolume] = useState(-999);
   const [cExhale, setCExhale] = useState();
   useEffect(()=>{
+    if(!meaStart)return;
     let previous = dataList[dataList.length-2];
     let current = dataList[dataList.length-1];
     let time = dataCalculateStrategyE.getTime(current);
@@ -401,7 +400,7 @@ const GainMeasurementPage = () =>{
     let exhale = dataCalculateStrategyE.isExhale(current);
     
 
-    if(cExhale !== exhale){
+    if(cExhale !== exhale && volumeFlowList.length !== 0){
       setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
     }
     
@@ -432,8 +431,7 @@ const GainMeasurementPage = () =>{
 //------------------------------------------------------------------------------------------------
 //재검사
 const resetChart = () => {
-  const initialV = [2,2,2] 
-  setDataList([initialV]);
+  setDataList([0,0]);
   setCalivration({
     "gain": {
             "exhale": "",
@@ -480,7 +478,6 @@ const resetChart = () => {
     
     "calibrationId": ""
 })
-
   setVolumeFlowList([{x:0, y:0}]);
   setCalDataList([calDataList[0]]);
   setCalFlag(1);
@@ -1007,6 +1004,7 @@ const [calivration,setCalivration] = useState({
   return(
     <div className="gain-measurement-page-container">
       {disconnectStat&&confirm ? <Confirm content={"연결된 Spirokit기기가 없습니다.\n설정 페이지로 이동해서 Spirokit을 연결해주세요."} btn={true} onOff={setDisconnectStat} select={disconnectConfirmFunc}/> : null}
+      {confirmStat ? <Confirm content="보정을 시작하시겠습니까?" btn={true} onOff={setConfirmStat} select={confirmFunc}/> : null}
       {gainError ? <Confirm content={"보정 적용에 실패했습니다. 가이드 구간을 통과하지 못하였거나, 정도관리(3L)에 맞추셔야 합니다(2L 이상 허용).\nInvalid calibration"} btn={"one"} onOff={setGainError} select={()=>{}}/> : null}
       {readyAlert ? <Confirm content="준비 중입니다..." btn={false} onOff={setReadyAlert} select={confirmFunc}/> : null}
       <div className="gain-measurement-page-nav">
@@ -1102,10 +1100,12 @@ const [calivration,setCalivration] = useState({
               
               if(!(firstBtnRef.current.classList.contains("disabled"))){
                 setBlowF(true);
-              setMeaStart(true);
-              secondBtnRef.current.classList.remove("disabled");
-              thirdBtnRef.current.classList.remove("disabled");
-              firstBtnRef.current.classList += " disabled";
+                setConfirmStat(true);
+                resetChart();
+
+                secondBtnRef.current.classList.remove("disabled");
+                thirdBtnRef.current.classList.remove("disabled");
+                firstBtnRef.current.classList += " disabled";
               }
             }}>
               <RiLungsLine className='lungIcon'/>시작
@@ -1113,15 +1113,15 @@ const [calivration,setCalivration] = useState({
           <div ref={secondBtnRef} onClick={()=>{
             if(!secondBtnRef.current.classList.contains("disabled")){
               resetChart()
-
             }
             }}>
               <RiLungsLine className='lungIcon'/>재측정</div>
           <div ref={thirdBtnRef} onClick={()=>{
             if(!thirdBtnRef.current.classList.contains("disabled")){
+
               calivrationApply()
               setMeaStart(false);
-              fourTBtnRef.current.classList.remove("disabled");
+              firstBtnRef.current.classList.remove("disabled");
               secondBtnRef.current.classList += " disabled";
               thirdBtnRef.current.classList += " disabled";
               fourTBtnRef.current.classList += " disabled";
