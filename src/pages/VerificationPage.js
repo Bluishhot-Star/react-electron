@@ -928,29 +928,16 @@ const [calivration,setCalivration] = useState({
         console.log(volumeFlowList);
         let veri = [];
         res.data.response.verify.map((value,index)=>{
-          
+
           if(value.strength === 'LOW'){
             
             if(Math.sign(value.flow) === -1){
               console.log('low')
               pass["firstM"] = value.pass;
               console.log(getGainVolume(res.data.response.graph.volumeFlow,value.flow))
-              veri = {
-                volume : getGainVolume(res.data.response.graph.volumeFlow,value.flow), 
-                flow : value.flow, 
-                error:value.error
-              }
-              verify.push(veri);
             }else{
               console.log('low')
               pass["firstP"] = value.pass;
-              veri = {
-                volume : getGainVolume(res.data.response.graph.volumeFlow,value.flow), 
-                flow : value.flow, 
-                error:value.error,
-                pass:value.pass
-              }
-              verify.push(veri);
   
             }
           }
@@ -958,23 +945,9 @@ const [calivration,setCalivration] = useState({
             console.log('mid')
             if(Math.sign(value.flow) === -1){
               pass["secondM"] = value.pass;
-              veri = {
-                volume : getGainVolume(res.data.response.graph.volumeFlow,value.flow), 
-                flow : value.flow, 
-                error:value.error,
-                pass:value.pass
-              }
-              verify.push(veri);
   
             }else{
               pass["secondP"] = value.pass;
-              veri = {
-                volume : getGainVolume(res.data.response.graph.volumeFlow,value.flow), 
-                flow : value.flow, 
-                error:value.error,
-                pass:value.pass
-              }
-              verify.push(veri);
   
   
             }
@@ -982,35 +955,26 @@ const [calivration,setCalivration] = useState({
             console.log('high')
             if(Math.sign(value.flow) === -1){
               pass["thirdM"] = value.pass;
-              veri = {
-                volume : getGainVolume(res.data.response.graph.volumeFlow,value.flow), 
-                flow : value.flow, 
-                error:value.error,
-                pass:value.pass
-              }
-              console.log(veri)
-              verify.push(veri);
   
   
             }else{
               pass["thirdP"] = value.pass;
-              veri = {
-                volume : getGainVolume(res.data.response.graph.volumeFlow,value.flow), 
-                flow : value.flow, 
-                error:value.error,
-                pass:value.pass
-              }
-              verify.push(veri);
   
             }
           }
+          veri = {
+            volume : getGainVolume(res.data.response.graph.volumeFlow,value.flow), 
+            flow : value.flow, 
+            error:value.error
+          }
+          verify.push(veri);
         })
   
         setPass(pass);
         setApply(true);
         console.log(pass);
         setVerify(verify);
-        
+        console.log(verify)
       })
       .catch((err)=>{
         console.log(err);
