@@ -380,6 +380,7 @@ const VerificationPage = () =>{
   const [cVolume, setCVolume] = useState(-999);
   const [cExhale, setCExhale] = useState();
   useEffect(()=>{
+    if(!meaStart)return;
     let previous = dataList[dataList.length-2];
     let current = dataList[dataList.length-1];
     let time = dataCalculateStrategyE.getTime(current);
@@ -387,7 +388,7 @@ const VerificationPage = () =>{
     let exhale = dataCalculateStrategyE.isExhale(current);
     
 
-    if(cExhale !== exhale){
+    if(cExhale !== exhale && volumeFlowList){
       setVolumeFlowList([...volumeFlowList,{x:volumeFlowList[volumeFlowList.length-1].x, y:0}]) // 호<=>흡 전환시 0 추가
     }
     
