@@ -65,6 +65,7 @@ useEffect(()=>{
     state.info = "Empty resource"
   }
   setTotalData(state);
+  console.log(state);
 },[])
   //fvc 그래프 처리
   useEffect(()=>{
@@ -963,20 +964,22 @@ useEffect(()=>{
       headers: {
         Authorization: `Bearer ${accessToken}`
       }}).then((res)=>{
-
         if(res.data.response.length !== 0){
+
           setDate(res.data.response);
           console.log(res.data.response[0])
           report(res.data.response[0]);
         }
         else{
+        console.log(res)
+          console.log(totalData)
           setTotalData({
-            info: totalData.info,
+            info: state.info,
             fvc:'Empty resource',
             svc:'Empty resource',
             date:"",
-            birth: totalData.birth,
-            chartNumber: totalData.chartNumber,
+            birth: state.birth,
+            chartNumber: state.chartNumber,
           })
           
           setDate([]);
@@ -1215,9 +1218,9 @@ useEffect(()=>{
               <div className="title">성별</div>
               <div className="content">{totalData.info === '' || totalData.info === 'Empty resource' ? '': totalData.info.gender=="m"?"남자":"여자"}</div>
               <div className="title">신장</div>
-              <div className="content">{totalData.fvc === '' || totalData.fvc === 'Empty resource' ? totalData.svc === '' || totalData.svc === 'Empty resource' ? "" : totalData.svc.subject.height : totalData.fvc.subject.height}cm</div>
+              <div className="content">{totalData.info === '' || totalData.info === 'Empty resource' ?  '' : totalData.info.subjectDetails.height}cm</div>
               <div className="title">몸무게</div>
-              <div className="content">{totalData.fvc === '' || totalData.fvc === 'Empty resource' ? totalData.svc === '' || totalData.svc === 'Empty resource' ? "" : totalData.svc.subject.weight : totalData.fvc.subject.weight}kg</div>
+              <div className="content">{totalData.info === '' || totalData.info === 'Empty resource' ?  '' : totalData.info.subjectDetails.weight}kg</div>
               <div className="title">생년월일</div>
               <div className="content">{totalData.info === '' || totalData.info === 'Empty resource' ? '': totalData.birth}</div>
               <div className="title">연간 흡연량</div>
