@@ -287,7 +287,7 @@ const MeasurementSVCPage = () =>{
               label: "",
               data: item,
               borderColor: `${colorList[index%10]}`,
-              borderWidth: 2.5,
+              borderWidth: 2,
               showLine: true,
               tension: 0.4
             }
@@ -1394,7 +1394,7 @@ useEffect(()=>{
         label: "",
             data: timeVolumeList,
             borderColor: `red`,
-            borderWidth: 2.5,
+            borderWidth: 2,
             showLine: true,
             tension: 0.4
       }],
@@ -1410,7 +1410,7 @@ useEffect(()=>{
         label: "",
             data: [],
             borderColor: `red`,
-            borderWidth: 2.5,
+            borderWidth: 2,
             showLine: true,
             tension: 0.4
       }],

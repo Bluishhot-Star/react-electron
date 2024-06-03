@@ -344,7 +344,7 @@ useEffect(()=>
             label: "",
             data: item,
             borderColor: `${colorList[index%10]}`,
-            borderWidth: 2.5,
+            borderWidth: 2,
             showLine: true,
             tension: 0.4
           }
@@ -392,7 +392,7 @@ useEffect(()=>
               label: "",
               data: item,
               borderColor: `${colorList[index%10]}`,
-              borderWidth: 2.5,
+              borderWidth: 2,
               showLine: true,
               tension: 0.4
             }
@@ -1658,7 +1658,7 @@ useEffect(()=>{
         label: "",
             data: volumeFlowList,
             borderColor: `rgba(1, 138, 190, 1)`,
-            borderWidth: 2.5,
+            borderWidth: 2,
             showLine: true,
             tension: 0.4
       }],
@@ -1674,7 +1674,7 @@ useEffect(()=>{
         label: "",
             data: [],
             borderColor: `rgba(1, 138, 190, 1)`,
-            borderWidth: 2.5,
+            borderWidth: 2,
             showLine: true,
             tension: 0.4
       }],
@@ -1700,7 +1700,7 @@ useEffect(()=>{
         label: "",
             data: timeVolumeList,
             borderColor: `rgba(1, 138, 190, 1)`,
-            borderWidth: 2.5,
+            borderWidth: 2,
             showLine: true,
             tension: 0.4
       }],

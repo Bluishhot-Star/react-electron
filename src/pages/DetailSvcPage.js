@@ -604,7 +604,7 @@ function DetailSvcPage(){
               label: "",
               data: item,
               borderColor: color,
-              borderWidth: 2.5,
+              borderWidth: 2,
               showLine: true,
               tension: 0.4
             }

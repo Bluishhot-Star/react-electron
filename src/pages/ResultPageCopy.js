@@ -743,7 +743,7 @@ useEffect(()=>{
               label: "",
               data: item,
               borderColor: `${colorList[index%10]}`,
-              borderWidth: 2.5,
+              borderWidth: 2,
               showLine: true,
               tension: 0.4
             }
@@ -789,7 +789,7 @@ useEffect(()=>{
               label: "",
               data: item,
               borderColor: `${colorList[index%10]}`,
-              borderWidth: 2.5,
+              borderWidth: 2,
               showLine: true,
               tension: 0.4
             }
@@ -866,7 +866,7 @@ useEffect(()=>{
               label: "",
               data: item,
               borderColor: `${colorList[index%10]}`,
-              borderWidth: 2.5,
+              borderWidth: 2,
               showLine: true,
               tension: 0.4
             }
