@@ -9,6 +9,7 @@
 * {
   font-family: 'Noto Sans KR';
   box-sizing: border-box;
+  scrollbar-width: none;
 }
 .App{
   background: linear-gradient(160deg, #fff, #fff, #e9e9e9);
@@ -493,6 +494,7 @@
   padding: 0 10px;
   background: #fff;
   position: relative;
+  scrollbar-width: none;
 }
 .measurement-slider-container{
   transform: rotate(-90deg);
@@ -506,6 +508,7 @@
 .measurement-slider-container .slider{
   transform: rotate(90deg);
   transform-origin: top left;
+  scrollbar-width: none;
 }
 .history-container .slider{
   position:absolute;
@@ -520,6 +523,10 @@
   overflow-x:hidden;
   transform:rotate(-90deg) translateX(-32vh);
   transform-origin:left top;
+  --webkit-scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
 }
 
 .history-container.empty{
