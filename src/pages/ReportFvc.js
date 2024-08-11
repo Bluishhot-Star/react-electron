@@ -736,7 +736,7 @@ useEffect(()=>{
   const fifthRendering = () => {
     const result = [];
 
-    for (let i = 7; i >= 0; i--) {
+    for (let i = 0; i < 8; i--) {
       if(i < state.data.fvcSvc.trials.length){
         result.push(
           <div className='column-line'>
