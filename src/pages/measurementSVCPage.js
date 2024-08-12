@@ -1212,6 +1212,9 @@ useEffect(()=>{
       resizeDelay:0,
       datalabels: false,
     },
+    animation:{
+      duration:0
+    },
     responsive: true,
     maintainAspectRatio: false,
     interaction: false, 
@@ -1231,7 +1234,7 @@ useEffect(()=>{
           stepSize : 10.0,
           beginAtZero: false,
           max: 12.0,
-          autoSkip: false,
+          autoSkip: true,
         },
         grid:{
           color: function(context) {
