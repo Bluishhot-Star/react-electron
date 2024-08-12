@@ -1111,13 +1111,15 @@ useEffect(()=>{
         if(timerReady && timerStart && !measureDone){
           setTimerStart(false);
           setReadyMeasureDone(true);
+          return;
           // if(readyMeasureDone){
             // setFlagTo({...flagTo, to: flagTo.from+calFlag});
           // }
         }
-        if(readyMeasureDone && volumeFlowList[calFlag] && volumeFlowList[calFlag]["y"] == 0){
+        if(readyMeasureDone){
           setMeasureDone(true);
           setReadyMeasureDone(false);
+          return;
         }
       }
       //호기 시
@@ -1132,6 +1134,7 @@ useEffect(()=>{
             // setFlagTo({...flagTo, to: flagTo.from+calFlag});
             setTimerStart(false);
             setReadyMeasureDone(true);
+            return;
             // setMeasureDone(true);
             // return;
           }
@@ -1139,6 +1142,7 @@ useEffect(()=>{
         if(readyMeasureDone){
           setMeasureDone(true);
           setReadyMeasureDone(false);
+          return;
         }
       }
       // fvc volumFlowList min
@@ -2190,7 +2194,7 @@ useEffect(()=>{
                   {
                     inFDone?
                       timerReady ?
-                      <Timer setRunTime={setRunTime} runTime={runTime} start={timerStart} stop={stopTime}/>
+                      <Timer setRunTime={setRunTime} runTime={runTime} measureDone={measureDone} start={timerStart} stop={stopTime}/>
                       :
                       sessionVol !== 0 ? 
                       <div className='gauge-status-content'>

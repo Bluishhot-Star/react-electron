@@ -36,7 +36,11 @@ function Timer(props){
       setRun(false);
     }
   },[props.start])
-  
+  useEffect(()=>{
+    if(props.measureDone){
+      setRun(false);
+    }
+  },[props.measureDone])
   // useEffect(()=>{
   //   if(run){
   //     intervalRef.current = setInterval(() => {
@@ -66,7 +70,7 @@ function Timer(props){
   },[props.start])
 
   useEffect(()=>{
-    if(run){
+    if(run && !props.measureDone){
       intervalRef.current = setInterval(() => {
         const now = new Date(Date.now() - startTimeRef.current);
         if(now.getTime() == props.stop*1000+1){
