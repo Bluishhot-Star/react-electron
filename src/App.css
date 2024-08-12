@@ -489,7 +489,7 @@
   border-radius: 7px;
   border: #ccc 1px solid;
   display: flex;
-  overflow: scroll;
+  overflow-y: scroll;
   align-items: center;
   padding: 0 10px;
   background: #fff;
@@ -524,6 +524,10 @@
   transform:rotate(-90deg) translateX(-32vh);
   transform-origin:left top;
   --webkit-scrollbar-width: none;
+}
+.history-container .slider.measure{
+  width:30vh;
+  max-height:54.5vw;
 }
 *::-webkit-scrollbar {
   display: none;

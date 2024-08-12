@@ -2337,7 +2337,7 @@ useEffect(()=>{
           </div>
 
           <div className="history-container">
-              <div className="slider">
+              <div className="slider measure">
                 {
                 totalData == " " || totalData == "Empty resource" || !totalData ? null :
                   totalData.trials.map((item, index)=>(
